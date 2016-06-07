@@ -66,17 +66,14 @@ public function uiInit( atom options = NULL )
 
 	if options = NULL then
 		options = allocate_data( sizeof(C_SIZE_T), 1 )
-		poke4( options, NULL )
+		mem_set( options, NULL, sizeof(C_SIZE_T) )
 	end if
 
-	object err = c_func( "uiInit", {options} )
+	atom err = c_func( "uiInit", {options} )
 	if err != NULL then
-
 		sequence str = peek_string( err )
-		c_proc( "uiFreeInitError", {err} )
-
-		err = str
-
+		uiFreeInitError( err )
+		return str
 	end if
 
 	return err
@@ -199,9 +196,13 @@ end procedure
 
 define_c_func( libui, "uiWindowTitle", {C_POINTER}, C_POINTER )
 public function uiWindowTitle( atom w )
-	atom title = c_func( "uiWindowTitle", {w} )
-	if title then return peek_string( title )
-		else return "" end if
+	atom ptr = c_func( "uiWindowTitle", {w} )
+	if ptr then
+		sequence str = peek_string( ptr )
+		uiFreeText( ptr )
+		return str
+	end if
+	return ""
 end function
 
 define_c_proc( libui, "uiWindowSetTitle", {C_POINTER,C_POINTER} )
@@ -238,9 +239,13 @@ end function
 
 define_c_func( libui, "uiButtonText", {C_POINTER}, C_POINTER )
 public function uiButtonText( atom b )
-	atom text = c_func( "uiButtonText", {b} )
-	if text then return peek_string( text )
-		else return "" end if
+	atom ptr = c_func( "uiButtonText", {b} )
+	if ptr then
+		sequence str = peek_string( ptr )
+		uiFreeText( ptr )
+		return str
+	end if
+	return ""
 end function
 
 define_c_proc( libui, "uiButtonSetText", {C_POINTER,C_POINTER} )
@@ -294,9 +299,13 @@ end function
 
 define_c_func( libui, "uiCheckboxText", {C_POINTER}, C_POINTER )
 public function uiCheckboxText( atom c )
-	atom text = c_func( "uiCheckboxText", {c} )
-	if text then return peek_string( text )
-		else return "" end if
+	atom ptr = c_func( "uiCheckboxText", {c} )
+	if ptr then
+		sequence str = peek_string( ptr )
+		uiFreeText( ptr )
+		return str
+	end if
+	return ""
 end function
 
 define_c_proc( libui, "uiCheckboxSetText", {C_POINTER,C_POINTER} )
@@ -328,9 +337,13 @@ end function
 
 define_c_func( libui, "uiEntryText", {C_POINTER}, C_POINTER )
 public function uiEntryText( atom e )
-	atom text = c_func( "uiEntryText", {e} )
-	if text then return peek_string( text )
-		else return "" end if
+	atom ptr = c_func( "uiEntryText", {e} )
+	if ptr then
+		sequence str = peek_string( ptr )
+		uiFreeText( ptr )
+		return str
+	end if
+	return ""
 end function
 
 define_c_proc( libui, "uiEntrySetText", {C_POINTER,C_POINTER} )
@@ -372,9 +385,13 @@ end function
 
 define_c_func( libui, "uiLabelText", {C_POINTER}, C_POINTER )
 public function uiLabelText( atom l )
-	atom text = c_func( "uiLabelText", {l} )
-	if text then return peek_string( text )
-		else return "" end if
+	atom ptr = c_func( "uiLabelText", {l} )
+	if ptr then
+		sequence str = peek_string( ptr )
+		uiFreeText( ptr )
+		return str
+	end if
+	return ""
 end function
 
 define_c_proc( libui, "uiLabelSetText", {C_POINTER,C_POINTER} )
@@ -428,9 +445,13 @@ end function
 
 define_c_func( libui, "uiGroupTitle", {C_POINTER}, C_POINTER )
 public function uiGroupTitle( atom g )
-	atom title = c_func( "uiGroupTitle", {g} )
-	if title then return peek_string( title )
-		else return "" end if
+	atom ptr = c_func( "uiGroupTitle", {g} )
+	if ptr then
+		sequence str = peek_string( ptr )
+		uiFreeText( ptr )
+		return str
+	end if
+	return ""
 end function
 
 define_c_proc( libui, "uiGroupSetTitle", {C_POINTER,C_POINTER} )
@@ -564,9 +585,13 @@ end procedure
 
 define_c_func( libui, "uiEditableComboboxText", {C_POINTER}, C_POINTER )
 public function uiEditableComboboxText( atom c )
-	atom text = c_func( "uiEditableComboboxText", {c} )
-	if text then return peek_string( text )
-		else return "" end if
+	atom ptr = c_func( "uiEditableComboboxText", {c} )
+	if ptr then
+		sequence str = peek_string( ptr )
+		uiFreeText( ptr )
+		return str
+	end if
+	return ""
 end function
 
 define_c_proc( libui, "uiEditableComboboxSetText", {C_POINTER,C_POINTER} )
@@ -637,9 +662,13 @@ end function
 
 define_c_func( libui, "uiMultilineEntryText", {C_POINTER}, C_POINTER )
 public function uiMultilineEntryText( atom e )
-	atom text = c_func( "uiMultilineEntryText", {C_POINTER} )
-	if text then return peek_string( text )
-		else return "" end if
+	atom ptr = c_func( "uiMultilineEntryText", {C_POINTER} )
+	if ptr then
+		sequence str = peek_string( ptr )
+		uiFreeText( ptr )
+		return str
+	end if
+	return ""
 end function
 
 define_c_proc( libui, "uiMultilineEntrySetText", {C_POINTER,C_POINTER} )
