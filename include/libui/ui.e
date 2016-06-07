@@ -1,22 +1,69 @@
 include std/dll.e
 include std/machine.e
+include std/convert.e
 include std/error.e
 include std/map.e
 
 export constant NULL = dll:NULL
 
 ifdef EU4_0 then
--- sizeof() is not declared in Euphoria 4.0
 
+--
+-- sizeof() is not declared in Euphoria 4.0
+--
 function sizeof( atom ctype )
 	return and_bits( ctype, #FF )
 end function
 
 end ifdef
 
+--
+-- peek one or more C doubles from memory
+--
+function peek_float64( object ptr )
 
+	if atom( ptr ) then
+		ptr = peek_float64({ ptr, 1 })
+		return ptr[1]
+	end if
+
+	atom offset = 0
+	sequence values = repeat( 0, ptr[2] )
+
+	for i = 1 to ptr[2] do
+
+		sequence bytes = peek({ ptr[1]+offset, sizeof(C_DOUBLE) })
+		values[i] = float64_to_atom( bytes )
+		offset += sizeof( C_DOUBLE )
+
+	end for
+
+	return values
+end function
+
+--
+-- poke one or more C doubles into memory
+--
+procedure poke_float64( atom ptr, object value )
+
+	if atom( value ) then value = {value} end if
+
+	atom offset = 0
+	for i = 1 to length( value ) do
+
+		sequence bytes = atom_to_float64( value[i] )
+		poke( ptr+offset, bytes )
+		offset += sizeof( C_DOUBLE )
+
+	end for
+
+end procedure
 
 map id_lookup = map:new()
+
+--
+-- provide string lookups of C functions
+--
 
 function define_c_func( atom lib, sequence name, sequence ptypes, atom rtype )
 
@@ -706,4 +753,153 @@ public function uiNewNonWrappingMultilineEntry()
 	return c_func( "uiNewNonWrappingMultilineEntry", {} )
 end function
 
+
+
+define_c_proc( libui, "uiMenuItemEnable", {C_POINTER} )
+public procedure uiMenuItemEnable( atom m )
+	c_proc( "uiMenuItemEnable", {m} )
+end procedure
+
+define_c_proc( libui, "uiMenuItemDisable", {C_POINTER} )
+public procedure uiMenuItemDisable( atom m )
+	c_proc( "uiMenuItemDisable", {m} )
+end procedure
+
+define_c_proc( libui, "uiMenuItemOnClicked", {C_POINTER,C_POINTER,C_POINTER} )
+public procedure uiMenuItemOnClicked( atom m, object func, atom data = NULL, atom id = routine_id(func) )
+	c_proc( "uiMenuItemOnClicked", {m,call_back(id),data} )
+end procedure
+
+define_c_func( libui, "uiMenuItemChecked", {C_POINTER}, C_INT )
+public function uiMenuItemChecked( atom m )
+	return c_func( "uiMenuItemChecked", {m} )
+end function
+
+define_c_proc( libui, "uiMenuItemSetChecked", {C_POINTER,C_INT} )
+public procedure uiMenuItemSetChecked( atom m, atom checked )
+	c_proc( "uiMenuItemSetChecked", {m,checked} )
+end procedure
+
+
+
+define_c_func( libui, "uiMenuAppendItem", {C_POINTER,C_POINTER}, C_POINTER )
+public function uiMenuAppendItem( atom m, sequence name )
+	return c_func( "uiMenuAppendItem", {m,allocate_string(name)} )
+end function
+
+define_c_func( libui, "uiMenuAppendCheckItem", {C_POINTER,C_POINTER}, C_POINTER )
+public function uiMenuAppendCheckItem( atom m, sequence name )
+	return c_func( "uiMenuAppendCheckItem", {m,allocate_string(name)} )
+end function
+
+define_c_func( libui, "uiMenuAppendQuitItem", {C_POINTER}, C_POINTER )
+public function uiMenuAppendQuitItem( atom m )
+	return c_func( "uiMenuAppendQuitItem", {m} )
+end function
+
+define_c_func( libui, "uiMenuAppendPreferencesItem", {C_POINTER}, C_POINTER )
+public function uiMenuAppendPreferencesItem( atom m )
+	return c_func( "uiMenuAppendPreferencesItem", {m} )
+end function
+
+define_c_func( libui, "uiMenuAppendAboutItem", {C_POINTER}, C_POINTER )
+public function uiMenuAppendAboutItem( atom m )
+	return c_func( "uiMenuAppendAboutItem", {m} )
+end function
+
+define_c_proc( libui, "uiMenuAppendSeparator", {C_POINTER} )
+public procedure uiMenuAppendSeparator( atom m )
+	c_proc( "uiMenuAppendSeparator", {m} )
+end procedure
+
+define_c_func( libui, "uiNewMenu", {C_POINTER}, C_POINTER )
+public function uiNewMenu( sequence name )
+	return c_func( "uiNewMenu", {allocate_string(name,1)} )
+end function
+
+
+
+define_c_func( libui, "uiOpenFile", {C_POINTER}, C_POINTER )
+public function uiOpenFile( atom parent )
+	atom ptr = c_func( "uiOpenFile", {parent} )
+	if ptr then
+		sequence str = peek_string( ptr )
+		uiFreeText( ptr )
+		return str
+	end if
+	return ""
+end function
+
+define_c_func( libui, "uiSaveFile", {C_POINTER}, C_POINTER )
+public function uiSaveFile( atom parent )
+	atom ptr = c_func( "uiSaveFile", {parent} )
+	if ptr then
+		sequence str = peek_string( ptr )
+		uiFreeText( ptr )
+		return str
+	end if
+	return ""
+end function
+
+define_c_proc( libui, "uiMsgBox", {C_POINTER,C_POINTER,C_POINTER} )
+public procedure uiMsgBox( atom parent, sequence title, sequence description )
+	c_proc( "uiMsgBox", {parent,allocate_string(title,1),allocate_string(description,1)} )
+end procedure
+
+define_c_proc( libui, "uiMsgBoxError", {C_POINTER,C_POINTER,C_POINTER} )
+public procedure uiMsgBoxError( atom parent, sequence title, sequence description )
+	c_proc( "uiMsgBoxError", {parent,allocate_string(title,1),allocate_string(description,1)} )
+end procedure
+
+
+
+-- TODO SetFont, mechanics
+
+define_c_func( libui, "uiFontButtonFont", {C_POINTER}, C_POINTER )
+public function uiFontButtonFont( atom b )
+	return c_func( "uiFontButtonFont", {b} )
+end function
+
+define_c_proc( libui, "uiFontButtonOnChanged", {C_POINTER,C_POINTER,C_POINTER} )
+public procedure uiFontButtonOnChanged( atom b, object func, atom data = NULL, atom id = routine_id(data) )
+	c_proc( "uiFontButtonOnChanged", {b,call_back(id),data} )
+end procedure
+
+define_c_func( libui, "uiNewFontButton", {}, C_POINTER )
+public function uiNewFontButton()
+	return c_func( "uiNewFontButton", {} )
+end function
+
+
+
+define_c_proc( libui, "uiColorButtonColor", {C_POINTER,C_POINTER,C_POINTER,C_POINTER,C_POINTER} )
+public function uiColorButtonColor( atom bt )
+
+	atom rgba = allocate_data( sizeof(C_DOUBLE)*4, 1 )
+	poke_float64( rgba, {0,0,0,0} )
+
+	atom r = rgba + sizeof(C_DOUBLE)*0
+	atom g = rgba + sizeof(C_DOUBLE)*1
+	atom b = rgba + sizeof(C_DOUBLE)*2
+	atom a = rgba + sizeof(C_DOUBLE)*3
+
+	c_proc( "uiColorButtonColor", {bt,r,g,b,a} )
+
+	return peek_float64({ rgba, 4 })
+end function
+
+define_c_proc( libui, "uiColorButtonSetColor", {C_POINTER,C_DOUBLE,C_DOUBLE,C_DOUBLE,C_DOUBLE} )
+public procedure uiColorButtonSetColor( atom bt, atom r, atom g, atom b, atom a )
+	c_proc( "uiColorButtonSetColor", {bt,r,g,b,a} )
+end procedure
+
+define_c_proc( libui, "uiColorButtonOnChanged", {C_POINTER,C_POINTER,C_POINTER} )
+public procedure uiColorButtonOnChanged( atom bt, object func, atom data = NULL, atom id = routine_id(func) )
+	c_proc( "uiColorButtonOnChanged", {bt,call_back(id),data} )
+end procedure
+
+define_c_func( libui, "uiNewColorButton", {}, C_POINTER )
+public function uiNewColorButton()
+	return c_func( "uiNewColorButton", {} )
+end function
 
