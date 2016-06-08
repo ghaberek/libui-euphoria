@@ -15,6 +15,20 @@ function sizeof( atom ctype )
 	return and_bits( ctype, #FF )
 end function
 
+--
+-- poke_pointer() is not declared in Euphoria 4.0
+--
+procedure poke_pointer( atom ptr, object value )
+	poke4( ptr, value )
+end procedure
+
+--
+-- peek_pointer() is not declared in Euphoria 4.0
+--
+function peek_pointer( object ptr )
+	return peek4u( ptr )
+end function
+
 end ifdef
 
 --
@@ -850,6 +864,428 @@ define_c_proc( libui, "uiMsgBoxError", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiMsgBoxError( atom parent, sequence title, sequence description )
 	c_proc( "uiMsgBoxError", {parent,allocate_string(title,1),allocate_string(description,1)} )
 end procedure
+
+
+
+define_c_proc( libui, "uiAreaSetSize", {C_POINTER,C_INT,C_INT} )
+public procedure uiAreaSetSize( atom a, atom width, atom height )
+	c_proc( "uiAreaSetSize", {a,width,height} )
+end procedure
+
+define_c_proc( libui, "uiAreaQueueRedrawAll", {C_POINTER} )
+public procedure uiAreaQueueRedrawAll( atom a )
+	c_proc( "uiAreaQueueRedrawAll", {a} )
+end procedure
+
+define_c_proc( libui, "uiAreaScrollTo", {C_POINTER,C_DOUBLE,C_DOUBLE,C_DOUBLE,C_DOUBLE} )
+public procedure uiAreaScrollTo( atom a, atom x, atom y, atom width, atom height )
+	c_proc( "uiAreaScrollTo", {a,x,y,width,height} )
+end procedure
+
+
+
+ifdef BITS64 then
+
+	constant
+		uiAreaHandler_Draw			=  0, -- pointer
+		uiAreaHandler_MouseEvent	=  8, -- pointer
+		uiAreaHandler_MouseCrossed	= 16, -- pointer
+		uiAreaHandler_DragBroken	= 24, -- pointer
+		uiAreaHandler_KeyEvent		= 32, -- pointer
+		SIZEOF_UIAREAHANDLER		= 40,
+	$
+
+elsedef
+
+	constant
+		uiAreaHandler_Draw			=  0, -- pointer
+		uiAreaHandler_MouseEvent	=  4, -- pointer
+		uiAreaHandler_MouseCrossed	=  8, -- pointer
+		uiAreaHandler_DragBroken	= 12, -- pointer
+		uiAreaHandler_KeyEvent		= 16, -- pointer
+		SIZEOF_UIAREAHANDLER		= 20,
+	$
+
+end ifdef
+
+
+public function uiNewAreaHandler()
+
+	atom ptr = allocate_data( SIZEOF_UIAREAHANDLER, 1 )
+	mem_set( ptr, NULL, SIZEOF_UIAREAHANDLER )
+
+	return ptr
+end function
+
+public procedure uiAreaSetDrawHandler( atom ah, object func, atom id = routine_id(func) )
+	poke_pointer( ah + uiAreaHandler_Draw, call_back(id) )
+end procedure
+
+public procedure uiAreaSetMouseEventHandler( atom ah, object func, atom id = routine_id(func) )
+	poke_pointer( ah + uiAreaHandler_MouseEvent, call_back(id) )
+end procedure
+
+public procedure uiAreaSetMouseCrossedHandler( atom ah, object func, atom id = routine_id(func) )
+	poke_pointer( ah + uiAreaHandler_MouseCrossed, call_back(id) )
+end procedure
+
+public procedure uiAreaSetDragBrokenHandler( atom ah, object func, atom id = routine_id(func) )
+	poke_pointer( ah + uiAreaHandler_DragBroken, call_back(id) )
+end procedure
+
+public procedure uiAreaSetKeyEventHandler( atom ah, object func, atom id = routine_id(func) )
+	poke_pointer( ah + uiAreaHandler_KeyEvent, call_back(id) )
+end procedure
+
+
+
+define_c_func( libui, "uiNewArea", {C_POINTER}, C_POINTER )
+public function uiNewArea( atom ah )
+	return c_func( "uiNewArea", {ah} )
+end function
+
+define_c_func( libui, "uiNewScrollingArea", {C_POINTER,C_INT,C_INT}, C_POINTER )
+public function uiNewScrollingArea( atom ah, atom width, atom height )
+	return c_func( "uiNewScrollingArea", {ah,width,height} )
+end function
+
+
+
+ifdef BITS64 then
+
+	constant
+		uiAreaDrawParams_Context	=  0, -- pointer
+		uiAreaDrawParams_AreaWidth	=  8, -- double
+		uiAreaDrawParams_AreaHeight	= 16, -- double
+		uiAreaDrawParams_ClipX		= 24, -- double
+		uiAreaDrawParams_ClipY		= 32, -- double
+		uiAreaDrawParams_ClipWidth	= 40, -- double
+		uiAreaDrawParams_ClipHeight	= 48, -- double
+		SIZEOF_UIAREADRAPARAMS		= 56,
+	$
+
+elsedef
+
+	constant
+		uiAreaDrawParams_Context	=  0, -- pointer
+		uiAreaDrawParams_AreaWidth	=  4, -- double
+		uiAreaDrawParams_AreaHeight	= 12, -- double
+		uiAreaDrawParams_ClipX		= 20, -- double
+		uiAreaDrawParams_ClipY		= 28, -- double
+		uiAreaDrawParams_ClipWidth	= 36, -- double
+		uiAreaDrawParams_ClipHeight	= 44, -- double
+		SIZEOF_UIAREADRAPARAMS		= 52,
+	$
+
+end ifdef
+
+
+public function uiAreaDrawGetContext( atom ap )
+	return peek_pointer( ap + uiAreaDrawParams_Context )
+end function
+
+public function uiAreaDrawGetWidth( atom ap )
+	return peek_float64( ap + uiAreaDrawParams_AreaWidth )
+end function
+
+public function uiAreaDrawGetHeight( atom ap )
+	return peek_float64( ap + uiAreaDrawParams_AreaHeight )
+end function
+
+public function uiAreaDrawGetClipX( atom ap )
+	return peek_float64( ap + uiAreaDrawParams_ClipX )
+end function
+
+public function uiAreaDrawGetClipY( atom ap )
+	return peek_float64( ap + uiAreaDrawParams_ClipY )
+end function
+
+public function uiAreaDrawGetClipWidth( atom ap )
+	return peek_float64( ap + uiAreaDrawParams_ClipWidth )
+end function
+
+public function uiAreaDrawGetClipHeight( atom ap )
+	return peek_float64( ap + uiAreaDrawParams_ClipHeight )
+end function
+
+
+
+public enum type uiDrawBrushType
+
+	uiDrawBrushTypeSolid = 0,
+	uiDrawBrushTypeLinearGradient,
+	uiDrawBrushTypeRadialGradient,
+	uiDrawBrushTypeImage
+
+end type
+
+public enum type uiDrawLineCap
+
+	uiDrawLineCapFlat = 0,
+	uiDrawLineCapRound,
+	uiDrawLineCapSquare
+
+end type
+
+public enum type uiDrawLineJoin
+
+	uiDrawLineJoinMiter = 0,
+	uiDrawLineJoinRound,
+	uiDrawLineJoinBevel
+
+end type
+
+-- this is the default for botoh cairo and Direct2D (in the latter case, from the C++ helper functions)
+-- Core Graphics doesn't explicitly specify a default, but NSBezierPath allows you to choose one, and this is the initial value
+-- so we're good to use it too!
+public constant uiDrawDefaultMiterLimit = 10.0
+
+public enum type uiDrawFillMode
+
+	uiDrawFillModeWinding = 0,
+	uiDrawFillModeAlternate
+
+end type
+
+constant
+	uiDrawMatrix_M11	=  0, -- double
+	uiDrawMatrix_M12	=  8, -- double
+	uiDrawMatrix_M21	= 16, -- double
+	uiDrawMatrix_M22	= 24, -- double
+	uiDrawMatrix_M31	= 32, -- double
+	uiDrawMatrix_M32	= 40, -- double
+	SIZEOF_UIDRAWMATRIX	= 48,
+$
+
+public function uiDrawMatrixGetMatrix( atom dm )
+	return peek_float64({ dm, 6 })
+end function
+
+ifdef BITS64 then
+
+	constant
+		uiDrawBrush_Type		=  0, -- int
+		uiDrawBrush_R			=  4, -- double
+		uiDrawBrush_G			= 12, -- double
+		uiDrawBrush_B			= 20, -- double
+		uiDrawBrush_A			= 28, -- double
+		uiDrawBrush_X0			= 36, -- double
+		uiDrawBrush_Y0			= 44, -- double
+		uiDrawBrush_X1			= 52, -- double
+		uiDrawBrush_Y1			= 60, -- double
+		uiDrawBrush_OuterRadius	= 68, -- double
+		uiDrawBrush_Stops		= 76, -- pointer
+		uiDrawBrush_NumStops	= 84, -- size_t
+		SIZEOF_UIDRABRUSH		= 92,
+	$
+
+elsedef
+
+	constant
+		uiDrawBrush_Type		=  0, -- int
+		uiDrawBrush_R			=  4, -- double
+		uiDrawBrush_G			= 12, -- double
+		uiDrawBrush_B			= 20, -- double
+		uiDrawBrush_A			= 28, -- double
+		uiDrawBrush_X0			= 36, -- double
+		uiDrawBrush_Y0			= 44, -- double
+		uiDrawBrush_X1			= 52, -- double
+		uiDrawBrush_Y1			= 60, -- double
+		uiDrawBrush_OuterRadius	= 68, -- double
+		uiDrawBrush_Stops		= 76, -- pointer
+		uiDrawBrush_NumStops	= 80, -- size_t
+		SIZEOF_UIDRABRUSH		= 84,
+	$
+
+end ifdef
+
+
+public function uiDrawBrushGetType( atom db )
+	return peek4s( db + uiDrawBrush_Type )
+end function
+
+public function uiDrawBrushGetColor( atom db )
+	return {
+		peek_float64( db + uiDrawBrush_R ),
+		peek_float64( db + uiDrawBrush_G ),
+		peek_float64( db + uiDrawBrush_B ),
+		peek_float64( db + uiDrawBrush_A )
+	}
+end function
+
+public function uiDrawBrushGetRect( atom db )
+	return {
+		peek_float64( db + uiDrawBrush_X0 ),
+		peek_float64( db + uiDrawBrush_Y0 ),
+		peek_float64( db + uiDrawBrush_X1 ),
+		peek_float64( db + uiDrawBrush_Y1 )
+	}
+end function
+
+public function uiDrawBrushGetRadius( atom db )
+	return peek_float64( db + uiDrawBrush_OuterRadius )
+end function
+
+public function uiDrawBrushGetStops( atom db )
+	atom num = peek_pointer( db + uiDrawBrush_NumStops )
+	return peek_pointer({ db + uiDrawBrush_Stops, num })
+end function
+
+
+
+constant
+	uiDrawBrushGradientStop_Pos		=  0, -- double
+	uiDrawBrushGradientStop_R		=  8, -- double
+	uiDrawBrushGradientStop_G		= 16, -- double
+	uiDrawBrushGradientStop_B		= 24, -- double
+	uiDrawBrushGradientStop_A		= 32, -- double
+	SIZE_UIDRAWBRUSHGRADIENTSTOP	= 40,
+$
+
+
+
+public function uiDrawBrushGradientStopGetPos( atom bg )
+	return peek_float64( bg + uiDrawBrushGradientStop_Pos )
+end function
+
+public function uiDrawBrushGradientStopGetColor( atom bg )
+	return {
+		peek_float64( bg + uiDrawBrushGradientStop_R ),
+		peek_float64( bg + uiDrawBrushGradientStop_G ),
+		peek_float64( bg + uiDrawBrushGradientStop_B ),
+		peek_float64( bg + uiDrawBrushGradientStop_A )
+	}
+end function
+
+
+
+ifdef BITS64 then
+
+	constant
+		uiDrawStrokeParams_Cap			=  0, -- int
+		uiDrawStrokeParams_Join			=  4, -- int
+		uiDrawStrokeParams_Thickness	=  8, -- double
+		uiDrawStrokeParams_MiterLimit	= 16, -- double
+		uiDrawStrokeParams_Dashes		= 24, -- pointer
+		uiDrawStrokeParams_NumDashes	= 32, -- size_t
+		uiDrawStrokeParams_DashPhase	= 40, -- double
+		SIZEOF_UIDRASTROKEPARAMS		= 48,
+	$
+
+elsedef
+
+	constant
+		uiDrawStrokeParams_Cap			=  0, -- int
+		uiDrawStrokeParams_Join			=  4, -- int
+		uiDrawStrokeParams_Thickness	=  8, -- double
+		uiDrawStrokeParams_MiterLimit	= 16, -- double
+		uiDrawStrokeParams_Dashes		= 24, -- pointer
+		uiDrawStrokeParams_NumDashes	= 28, -- size_t
+		uiDrawStrokeParams_DashPhase	= 32, -- double
+		SIZEOF_UIDRASTROKEPARAMS		= 40,
+	$
+
+end ifdef
+
+public function uiDrawStrokeGetCap( atom ds )
+	return peek4s( ds + uiDrawStrokeParams_Cap )
+end function
+
+public function uiDrawStrokeGetJoin( atom ds )
+	return peek4s( ds + uiDrawStrokeParams_Join )
+end function
+
+public function uiDrawStrokeGetThickness( atom ds )
+	return peek_float64( ds + uiDrawStrokeParams_Thickness )
+end function
+
+public function uiDrawStrokeGetMiterLimit( atom ds )
+	return peek_float64( ds + uiDrawStrokeParams_MiterLimit )
+end function
+
+public function uiDrawStrokeGetDashes( atom ds )
+	atom num = peek_pointer( ds + uiDrawStrokeParams_NumDashes )
+	return peek_float64({ ds + uiDrawStrokeParams_Dashes, num })
+end function
+
+public function uiDrawStrokeGetDashPhase( atom ds )
+	return peek_float64( ds + uiDrawStrokeParams_DashPhase )
+end function
+
+
+
+define_c_func( libui, "uiDrawNewPath", {C_INT}, C_POINTER )
+public function uiDrawNewPath( atom fillMode )
+	return c_func( "uiDrawNewPath", {fillMode} )
+end function
+
+define_c_proc( libui, "uiDrawFreePath", {C_POINTER} )
+public procedure uiDrawFreePath( atom p )
+	c_proc( "uiDrawFreePath", {p} )
+end procedure
+
+define_c_proc( libui, "uiDrawPathNewFigure", {C_POINTER,C_DOUBLE,C_DOUBLE} )
+public procedure uiDrawPathNewFigure( atom p, atom x, atom y )
+	c_proc( "uiDrawPathNewFigure", {p,x,y} )
+end procedure
+
+define_c_proc( libui, "uiDrawPathNewFigureWithArc", {C_POINTER,C_DOUBLE,C_DOUBLE,C_DOUBLE,C_DOUBLE,C_DOUBLE,C_INT} )
+public procedure uiDrawPathNewFigureWithArc( atom p, atom xCenter, atom yCenter, atom radius, atom startAngle, atom sweep, atom negative )
+	c_proc( "uiDrawPathNewFigureWithArc", {p,xCenter,yCenter,radius,startAngle,sweep,negative} )
+end procedure
+
+define_c_proc( libui, "uiDrawPathLineTo", {C_POINTER,C_DOUBLE,C_DOUBLE} )
+public procedure uiDrawPathLineTo( atom p, atom x, atom y )
+	c_proc( "uiDrawPathLineTo", {p,x,y} )
+end procedure
+
+-- notes: angles are both relative to 0 and go counterclockwise
+-- TODO is the initial line segment on cairo and OS X a proper join?
+-- TODO what if sweep < 0?
+
+define_c_proc( libui, "uiDrawPathArcTo", {C_POINTER,C_DOUBLE,C_DOUBLE,C_DOUBLE,C_DOUBLE,C_DOUBLE,C_INT} )
+public procedure uiDrawPathArcTo( atom p, atom xCenter, atom yCenter, atom radius, atom startAngle, atom sweep, atom negative )
+	c_proc( "uiDrawPathArcTo", {p,xCenter,yCenter,radius,startAngle,sweep,negative} )
+end procedure
+
+define_c_proc( libui, "uiDrawPathBezierTo", {C_POINTER,C_DOUBLE,C_DOUBLE,C_DOUBLE,C_DOUBLE,C_DOUBLE,C_DOUBLE} )
+public procedure uiDrawPathBezierTo( atom p, atom c1x, atom c1y, atom c2x, atom c2y, atom endX, atom endY )
+	c_proc( "uiDrawPathBezierTo", {p,c1x,c1y,c2x,c2y,endX,endY} )
+end procedure
+
+-- TODO quadratic bezier
+
+define_c_proc( libui, "uiDrawPathCloseFigure", {C_POINTER} )
+public procedure uiDrawPathCloseFigure( atom p )
+	c_proc( "uiDrawPathCloseFigure", {p} )
+end procedure
+
+-- TODO effect of these when a figure is already started
+
+define_c_proc( libui, "uiDrawPathAddRectangle", {C_POINTER,C_DOUBLE,C_DOUBLE,C_DOUBLE,C_DOUBLE} )
+public procedure uiDrawPathAddRectangle( atom p, atom x, atom y, atom width, atom height )
+	c_proc( "uiDrawPathAddRectangle", {p,x,y,width,height} )
+end procedure
+
+define_c_proc( libui, "uiDrawPathEnd", {C_POINTER} )
+public procedure uiDrawPathEnd( atom p )
+	c_proc( "uiDrawPathEnd", {p} )
+end procedure
+
+define_c_proc( libui, "uiDrawStroke", {C_POINTER,C_POINTER,C_POINTER,C_POINTER} )
+public procedure uiDrawStroke( atom c, atom path, atom b, atom p )
+	c_proc( "uiDrawStroke", {c,path,b,p} )
+end procedure
+
+define_c_proc( libui, "uiDrawFill", {C_POINTER,C_POINTER,C_POINTER} )
+public procedure uiDrawFill( atom c, atom path, atom b )
+	c_proc( "uiDrawFill", {c,path,b} )
+end procedure
+
+-- TODO primitives:
+-- - rounded rectangles
+-- - elliptical arcs
+-- - quadratic bezier curves
 
 
 
