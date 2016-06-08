@@ -1076,7 +1076,7 @@ ifdef BITS64 then
 		uiDrawBrush_OuterRadius	= 68, -- double
 		uiDrawBrush_Stops		= 76, -- pointer
 		uiDrawBrush_NumStops	= 84, -- size_t
-		SIZEOF_UIDRABRUSH		= 92,
+		SIZEOF_UIDRAWBRUSH		= 92,
 	$
 
 elsedef
@@ -1094,15 +1094,33 @@ elsedef
 		uiDrawBrush_OuterRadius	= 68, -- double
 		uiDrawBrush_Stops		= 76, -- pointer
 		uiDrawBrush_NumStops	= 80, -- size_t
-		SIZEOF_UIDRABRUSH		= 84,
+		SIZEOF_UIDRAWBRUSH		= 84,
 	$
 
 end ifdef
 
+procedure uiFreeDrawBrush( atom db )
+
+	atom ptr = peek_pointer( db + uiDrawBrush_Stops )
+	if ptr then free( ptr ) end if
+
+end procedure
+
+public function uiNewDrawBrush()
+
+	atom db = allocate_data( SIZEOF_UIDRAWBRUSH )
+	mem_set( db, NULL, SIZEOF_UIDRAWBRUSH )
+
+	return delete_routine( db, routine_id("uiFreeDrawBrush") )
+end function
 
 public function uiDrawBrushGetType( atom db )
 	return peek4s( db + uiDrawBrush_Type )
 end function
+
+public procedure uiDrawBrushSetType( atom db, atom brushType )
+	poke4( db + uiDrawBrush_Type, brushType )
+end procedure
 
 public function uiDrawBrushGetColor( atom db )
 	return {
@@ -1113,6 +1131,15 @@ public function uiDrawBrushGetColor( atom db )
 	}
 end function
 
+public procedure uiDrawBrushSetColor( atom db, atom r, atom g, atom b, atom a )
+
+	poke_float64( db + uiDrawBrush_R, r )
+	poke_float64( db + uiDrawBrush_G, g )
+	poke_float64( db + uiDrawBrush_B, b )
+	poke_float64( db + uiDrawBrush_A, a )
+
+end procedure
+
 public function uiDrawBrushGetRect( atom db )
 	return {
 		peek_float64( db + uiDrawBrush_X0 ),
@@ -1122,14 +1149,55 @@ public function uiDrawBrushGetRect( atom db )
 	}
 end function
 
+public procedure uiDrawBrushSetRect( atom db, atom x0, atom y0, atom x1, atom y1 )
+
+	poke_float64( db + uiDrawBrush_X0, x0 )
+	poke_float64( db + uiDrawBrush_Y0, y0 )
+	poke_float64( db + uiDrawBrush_X1, x1 )
+	poke_float64( db + uiDrawBrush_Y1, y1 )
+
+end procedure
+
 public function uiDrawBrushGetRadius( atom db )
 	return peek_float64( db + uiDrawBrush_OuterRadius )
 end function
 
+public procedure uiDrawBrushSetRadius( atom db, atom radius )
+	poke_float64( db + uiDrawBrush_OuterRadius, radius )
+end procedure
+
 public function uiDrawBrushGetStops( atom db )
+
 	atom num = peek_pointer( db + uiDrawBrush_NumStops )
-	return peek_pointer({ db + uiDrawBrush_Stops, num })
+	atom ptr = peek_pointer( db + uiDrawBrush_Stops )
+
+	if ptr then
+		return peek_float64({ ptr, num })
+	end if
+
+	return {}
 end function
+
+public procedure uiDrawBrushSetStops( atom db, sequence stops )
+
+	atom ptr = peek_pointer( db + uiDrawBrush_Stops )
+	atom num = length( stops )
+
+	if ptr then
+		free( ptr )
+	end if
+
+	if num then
+		ptr = allocate_data( sizeof(C_DOUBLE)*num )
+		poke_float64( ptr, stops )
+	else
+		ptr = NULL
+	end if
+
+	poke_pointer( db + uiDrawBrush_NumStops, num )
+	poke_pointer( db + uiDrawBrush_Stops, ptr )
+
+end procedure
 
 
 
@@ -1142,11 +1210,13 @@ constant
 	SIZE_UIDRAWBRUSHGRADIENTSTOP	= 40,
 $
 
-
-
 public function uiDrawBrushGradientStopGetPos( atom bg )
 	return peek_float64( bg + uiDrawBrushGradientStop_Pos )
 end function
+
+public procedure uiDrawBrushGradientStopSetPos( atom bg, atom pos )
+	poke_float64( bg + uiDrawBrushGradientStop_Pos, pos )
+end procedure
 
 public function uiDrawBrushGradientStopGetColor( atom bg )
 	return {
@@ -1156,6 +1226,15 @@ public function uiDrawBrushGradientStopGetColor( atom bg )
 		peek_float64( bg + uiDrawBrushGradientStop_A )
 	}
 end function
+
+public procedure uiDrawBrushGradientStopSetColor( atom bg, atom r, atom g, atom b, atom a )
+
+	poke_float64( bg + uiDrawBrushGradientStop_R, r )
+	poke_float64( bg + uiDrawBrushGradientStop_G, g )
+	poke_float64( bg + uiDrawBrushGradientStop_B, b )
+	poke_float64( bg + uiDrawBrushGradientStop_A, a )
+
+end procedure
 
 
 
@@ -1187,30 +1266,93 @@ elsedef
 
 end ifdef
 
+procedure uiFreeDrawStrokeParams( atom ds )
+
+	atom ptr = peek_pointer( ds + uiDrawStrokeParams_Dashes )
+	if ptr then free( ptr ) end if
+
+end procedure
+
+public function uiNewDrawStrokeParams()
+
+	atom ds = allocate_data( SIZEOF_UIDRASTROKEPARAMS )
+	mem_set( ds, NULL, SIZEOF_UIDRASTROKEPARAMS )
+
+	return delete_routine( ds, routine_id("uiFreeDrawStrokeParams") )
+end function
+
 public function uiDrawStrokeGetCap( atom ds )
 	return peek4s( ds + uiDrawStrokeParams_Cap )
 end function
+
+public procedure uiDrawStrokeSetCap( atom ds, atom cap )
+	poke4( ds + uiDrawStrokeParams_Cap, cap )
+end procedure
 
 public function uiDrawStrokeGetJoin( atom ds )
 	return peek4s( ds + uiDrawStrokeParams_Join )
 end function
 
+public procedure uiDrawStrokeSetJoin( atom ds, atom join )
+	poke4( ds + uiDrawStrokeParams_Join, join )
+end procedure
+
 public function uiDrawStrokeGetThickness( atom ds )
 	return peek_float64( ds + uiDrawStrokeParams_Thickness )
 end function
+
+public procedure uiDrawStrokeSetThickness( atom ds, atom thickness )
+	poke_float64( ds + uiDrawStrokeParams_Thickness, thickness )
+end procedure
 
 public function uiDrawStrokeGetMiterLimit( atom ds )
 	return peek_float64( ds + uiDrawStrokeParams_MiterLimit )
 end function
 
+public procedure uiDrawStrokeSetMiterLimit( atom ds, atom miterLimit )
+	poke_float64( ds + uiDrawStrokeParams_MiterLimit, miterLimit )
+end procedure
+
 public function uiDrawStrokeGetDashes( atom ds )
+
+	atom ptr = peek_pointer( ds + uiDrawStrokeParams_Dashes )
 	atom num = peek_pointer( ds + uiDrawStrokeParams_NumDashes )
-	return peek_float64({ ds + uiDrawStrokeParams_Dashes, num })
+
+	if ptr then
+		return peek_float64({ ptr, num })
+	end if
+
+	return {}
 end function
+
+public procedure uiDrawStrokeSetDashes( atom ds, sequence dashes )
+
+	atom ptr = peek_pointer( ds + uiDrawStrokeParams_Dashes )
+	atom num = length( dashes )
+
+	if ptr then
+		free( ptr )
+	end if
+
+	if num then
+		ptr = allocate_data( sizeof(C_DOUBLE)*num )
+		poke_float64( ptr, dashes )
+	else
+		ptr = NULL
+	end if
+
+	poke_pointer( ds + uiDrawStrokeParams_NumDashes, num )
+	poke_pointer( ds + uiDrawStrokeParams_Dashes, ptr )
+
+end procedure
 
 public function uiDrawStrokeGetDashPhase( atom ds )
 	return peek_float64( ds + uiDrawStrokeParams_DashPhase )
 end function
+
+public procedure uiDrawStrokeSetDashPhase( atom ds, atom dashPhase )
+	poke_float64( ds + uiDrawStrokeParams_DashPhase, dashPhase )
+end procedure
 
 
 
