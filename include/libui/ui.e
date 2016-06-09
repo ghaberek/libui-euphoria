@@ -257,12 +257,17 @@ end procedure
 
 define_c_func( libui, "uiWindowTitle", {C_POINTER}, C_POINTER )
 public function uiWindowTitle( atom w )
+
 	atom ptr = c_func( "uiWindowTitle", {w} )
+
 	if ptr then
+
 		sequence str = peek_string( ptr )
-		uiFreeText( ptr )
+		c_proc( "uiFreeText", {ptr} )
+
 		return str
 	end if
+
 	return ""
 end function
 
@@ -300,12 +305,17 @@ end function
 
 define_c_func( libui, "uiButtonText", {C_POINTER}, C_POINTER )
 public function uiButtonText( atom b )
+
 	atom ptr = c_func( "uiButtonText", {b} )
+
 	if ptr then
+
 		sequence str = peek_string( ptr )
-		uiFreeText( ptr )
+		c_proc( "uiFreeText", {ptr} )
+
 		return str
 	end if
+
 	return ""
 end function
 
@@ -360,12 +370,17 @@ end function
 
 define_c_func( libui, "uiCheckboxText", {C_POINTER}, C_POINTER )
 public function uiCheckboxText( atom c )
+
 	atom ptr = c_func( "uiCheckboxText", {c} )
+
 	if ptr then
+
 		sequence str = peek_string( ptr )
-		uiFreeText( ptr )
+		c_proc( "uiFreeText", {ptr} )
+
 		return str
 	end if
+
 	return ""
 end function
 
@@ -398,12 +413,17 @@ end function
 
 define_c_func( libui, "uiEntryText", {C_POINTER}, C_POINTER )
 public function uiEntryText( atom e )
+
 	atom ptr = c_func( "uiEntryText", {e} )
+
 	if ptr then
+
 		sequence str = peek_string( ptr )
-		uiFreeText( ptr )
+		c_proc( "uiFreeText", {ptr} )
+
 		return str
 	end if
+
 	return ""
 end function
 
@@ -446,12 +466,17 @@ end function
 
 define_c_func( libui, "uiLabelText", {C_POINTER}, C_POINTER )
 public function uiLabelText( atom l )
+
 	atom ptr = c_func( "uiLabelText", {l} )
+
 	if ptr then
+
 		sequence str = peek_string( ptr )
-		uiFreeText( ptr )
+		c_proc( "uiFreeText", {ptr} )
+
 		return str
 	end if
+
 	return ""
 end function
 
@@ -506,12 +531,17 @@ end function
 
 define_c_func( libui, "uiGroupTitle", {C_POINTER}, C_POINTER )
 public function uiGroupTitle( atom g )
+
 	atom ptr = c_func( "uiGroupTitle", {g} )
+
 	if ptr then
+
 		sequence str = peek_string( ptr )
-		uiFreeText( ptr )
+		c_proc( "uiFreeText", {ptr} )
+
 		return str
 	end if
+
 	return ""
 end function
 
@@ -646,12 +676,17 @@ end procedure
 
 define_c_func( libui, "uiEditableComboboxText", {C_POINTER}, C_POINTER )
 public function uiEditableComboboxText( atom c )
+
 	atom ptr = c_func( "uiEditableComboboxText", {c} )
+
 	if ptr then
+
 		sequence str = peek_string( ptr )
-		uiFreeText( ptr )
+		c_proc( "uiFreeText", {ptr} )
+
 		return str
 	end if
+
 	return ""
 end function
 
@@ -723,12 +758,17 @@ end function
 
 define_c_func( libui, "uiMultilineEntryText", {C_POINTER}, C_POINTER )
 public function uiMultilineEntryText( atom e )
+
 	atom ptr = c_func( "uiMultilineEntryText", {C_POINTER} )
+
 	if ptr then
+
 		sequence str = peek_string( ptr )
-		uiFreeText( ptr )
+		c_proc( "uiFreeText", {ptr} )
+
 		return str
 	end if
+
 	return ""
 end function
 
@@ -835,23 +875,33 @@ end function
 
 define_c_func( libui, "uiOpenFile", {C_POINTER}, C_POINTER )
 public function uiOpenFile( atom parent )
+
 	atom ptr = c_func( "uiOpenFile", {parent} )
+
 	if ptr then
+
 		sequence str = peek_string( ptr )
-		uiFreeText( ptr )
+		c_proc( "uiFreeText", {ptr} )
+
 		return str
 	end if
+
 	return ""
 end function
 
 define_c_func( libui, "uiSaveFile", {C_POINTER}, C_POINTER )
 public function uiSaveFile( atom parent )
+
 	atom ptr = c_func( "uiSaveFile", {parent} )
+
 	if ptr then
+
 		sequence str = peek_string( ptr )
-		uiFreeText( ptr )
+		c_proc( "uiFreeText", {ptr} )
+
 		return str
 	end if
+
 	return ""
 end function
 
@@ -1381,6 +1431,8 @@ public procedure uiDrawPathLineTo( atom p, atom x, atom y )
 	c_proc( "uiDrawPathLineTo", {p,x,y} )
 end procedure
 
+
+
 -- notes: angles are both relative to 0 and go counterclockwise
 -- TODO is the initial line segment on cairo and OS X a proper join?
 -- TODO what if sweep < 0?
@@ -1395,12 +1447,16 @@ public procedure uiDrawPathBezierTo( atom p, atom c1x, atom c1y, atom c2x, atom 
 	c_proc( "uiDrawPathBezierTo", {p,c1x,c1y,c2x,c2y,endX,endY} )
 end procedure
 
+
+
 -- TODO quadratic bezier
 
 define_c_proc( libui, "uiDrawPathCloseFigure", {C_POINTER} )
 public procedure uiDrawPathCloseFigure( atom p )
 	c_proc( "uiDrawPathCloseFigure", {p} )
 end procedure
+
+
 
 -- TODO effect of these when a figure is already started
 
@@ -1414,6 +1470,8 @@ public procedure uiDrawPathEnd( atom p )
 	c_proc( "uiDrawPathEnd", {p} )
 end procedure
 
+
+
 define_c_proc( libui, "uiDrawStroke", {C_POINTER,C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiDrawStroke( atom c, atom path, atom b, atom p )
 	c_proc( "uiDrawStroke", {c,path,b,p} )
@@ -1424,10 +1482,230 @@ public procedure uiDrawFill( atom c, atom path, atom b )
 	c_proc( "uiDrawFill", {c,path,b} )
 end procedure
 
+
+
 -- TODO primitives:
 -- - rounded rectangles
 -- - elliptical arcs
 -- - quadratic bezier curves
+
+
+
+define_c_proc( libui, "uiDrawMatrixSetIdentity", {C_POINTER} )
+public procedure uiDrawMatrixSetIdentity( atom m )
+	c_proc( "uiDrawMatrixSetIdentity", {m} )
+end procedure
+
+define_c_proc( libui, "uiDrawMatrixTranslate", {C_POINTER,C_DOUBLE,C_DOUBLE} )
+public procedure uiDrawMatrixTranslate( atom m, atom x, atom y )
+	c_proc( "uiDrawMatrixTranslate", {m,x,y} )
+end procedure
+
+define_c_proc( libui, "uiDrawMatrixScale", {C_POINTER,C_DOUBLE,C_DOUBLE,C_DOUBLE,C_DOUBLE} )
+public procedure uiDrawMatrixScale( atom m, atom xCenter, atom yCenter, atom x, atom y )
+	c_proc( "uiDrawMatrixScale", {m,xCenter,yCenter,x,y} )
+end procedure
+
+define_c_proc( libui, "uiDrawMatrixRotate", {C_POINTER,C_DOUBLE,C_DOUBLE,C_DOUBLE} )
+public procedure uiDrawMatrixRotate( atom m, atom x, atom y, atom amount )
+	c_proc( "uiDrawMatrixRotate", {m,x,y,amount} )
+end procedure
+
+define_c_proc( libui, "uiDrawMatrixSkew", {C_POINTER,C_DOUBLE,C_DOUBLE,C_DOUBLE,C_DOUBLE} )
+public procedure uiDrawMatrixSkew( atom m, atom x, atom y, atom xamount, atom yamount )
+	c_proc( "uiDrawMatrixSkew", {m,x,y,xamount,yamount} )
+end procedure
+
+define_c_proc( libui, "uiDrawMatrixMultiply", {C_POINTER,C_POINTER} )
+public procedure uiDrawMatrixMultiply( atom dest, atom src )
+	c_proc( "uiDrawMatrixMultiply", {dest,src} )
+end procedure
+
+define_c_func( libui, "uiDrawMatrixInvertible", {C_POINTER}, C_INT )
+public function uiDrawMatrixInvertible( atom m )
+	return c_func( "uiDrawMatrixInvertible", {m} )
+end function
+
+define_c_func( libui, "uiDrawMatrixInvert", {C_POINTER}, C_INT )
+public function uiDrawMatrixInvert( atom m )
+	return c_func( "uiDrawMatrixInvert", {m} )
+end function
+
+define_c_proc( libui, "uiDrawMatrixTransformPoint", {C_POINTER,C_POINTER,C_POINTER} )
+public function uiDrawMatrixTransformPoint( atom m )
+
+	atom ptr = allocate_data( sizeof(C_DOUBLE)*2, 1 )
+	mem_set( ptr, NULL, sizeof(C_DOUBLE)*2 )
+
+	atom x = ptr + sizeof(C_DOUBLE)*0
+	atom y = ptr + sizeof(C_DOUBLE)*1
+
+	c_proc( "uiDrawMatrixTransformPoint", {m,x,y} )
+
+	return peek_float64({ ptr, 2 })
+end function
+
+define_c_proc( libui, "uiDrawMatrixTransformSize", {C_POINTER,C_POINTER,C_POINTER} )
+public function uiDrawMatrixTransformSize( atom m )
+
+	atom ptr = allocate_data( sizeof(C_DOUBLE)*2, 1 )
+	mem_set( ptr, NULL, sizeof(C_DOUBLE)*2 )
+
+	atom x = ptr + sizeof(C_DOUBLE)*0
+	atom y = ptr + sizeof(C_DOUBLE)*1
+
+	c_proc( "uiDrawMatrixTransformSize", {m,x,y} )
+
+	return peek_float64({ ptr, 2 })
+end function
+
+define_c_proc( libui, "uiDrawTransform", {C_POINTER,C_POINTER} )
+public procedure uiDrawTransform( atom c, atom m )
+	c_proc( "uiDrawTransform", {c,m} )
+end procedure
+
+-- TODO add a uiDrawPathStrokeToFill() or something like that
+
+define_c_proc( libui, "uiDrawClip", {C_POINTER,C_POINTER} )
+public procedure uiDrawClip( atom c, atom path )
+	c_proc( "uiDrawClip", {c,path} )
+end procedure
+
+define_c_proc( libui, "uiDrawSave", {C_POINTER} )
+public procedure uiDrawSave( atom c )
+	c_proc( "uiDrawSave", {c} )
+end procedure
+
+define_c_proc( libui, "uiDrawRestore", {C_POINTER} )
+public procedure uiDrawRestore( atom c )
+	c_proc( "uiDrawRestore", {c} )
+end procedure
+
+-- TODO manage the use of Text, Font, and TextFont, and of the uiDrawText prefix in general
+
+
+--// TODO
+
+define_c_func( libui, "uiDrawListFontFamilies", {}, C_POINTER )
+define_c_func( libui, "uiDrawFontFamiliesNumFamilies", {C_POINTER}, C_UINT )
+define_c_func( libui, "uiDrawFontFamiliesFamily", {C_POINTER,C_UINT}, C_POINTER )
+define_c_proc( libui, "uiDrawFreeFontFamilies", {C_POINTER} )
+
+public function uiDrawListFontFamilies()
+
+	atom ff = c_func( "uiDrawListFontFamilies", {} )
+	atom num = c_func( "uiDrawListFontFamilies", {ff} )
+
+	sequence values = repeat( "", num )
+	for n = 0 to num - 1 do
+
+		atom str = c_func( "uiDrawFontFamiliesFamily", {ff,n} )
+
+		values[n] = peek_string( str )
+		c_proc( "uiFreeText", {str} )
+
+	end for
+
+	c_proc( "uiDrawFreeFontFamilies", {ff} )
+
+	return values
+end function
+
+--// END TODO
+
+
+public enum type uiDrawTextWeight
+
+	uiDrawTextWeightThin = 0,
+	uiDrawTextWeightUltraLight,
+	uiDrawTextWeightLight,
+	uiDrawTextWeightBook,
+	uiDrawTextWeightNormal,
+	uiDrawTextWeightMedium,
+	uiDrawTextWeightSemiBold,
+	uiDrawTextWeightBold,
+	uiDrawTextWeightUtraBold,
+	uiDrawTextWeightHeavy,
+	uiDrawTextWeightUltraHeavy
+
+end type
+
+public enum type uiDrawTextItalic
+
+	uiDrawTextItalicNormal = 0,
+	uiDrawTextItalicOblique,
+	uiDrawTextItalicItalic
+
+end type
+
+public enum type uiDrawTextStretch
+
+	uiDrawTextStretchUltraCondensed = 0,
+	uiDrawTextStretchExtraCondensed,
+	uiDrawTextStretchCondensed,
+	uiDrawTextStretchSemiCondensed,
+	uiDrawTextStretchNormal,
+	uiDrawTextStretchSemiExpanded,
+	uiDrawTextStretchExpanded,
+	uiDrawTextStretchExtraExpanded,
+	uiDrawTextStretchUltraExpanded
+
+end type
+
+ifdef BITS64 then
+
+	constant
+		uiDrawTextFontDescriptor_Family		=  0, -- pointer
+		uiDrawTextFontDescriptor_Size		=  8, -- double
+		uiDrawTextFontDescriptor_Weight		= 16, -- int
+		uiDrawTextFontDescriptor_Italic		= 20, -- int
+		uiDrawTextFontDescriptor_Stretch	= 24, -- int
+		SIZEOF_UIDRAWTEXTFONTDESCRIPTOR		= 28,
+	$
+
+elsedef
+
+	constant
+		uiDrawTextFontDescriptor_Family		=  0, -- pointer
+		uiDrawTextFontDescriptor_Size		=  4, -- double
+		uiDrawTextFontDescriptor_Weight		= 12, -- int
+		uiDrawTextFontDescriptor_Italic		= 16, -- int
+		uiDrawTextFontDescriptor_Stretch	= 20, -- int
+		SIZEOF_UIDRAWTEXTFONTDESCRIPTOR		= 24,
+	$
+
+end ifdef
+
+procedure uiFreeDrawTextFontDescriptor( atom fd )
+
+	atom ptr = peek_pointer( fd + uiDrawTextFontDescriptor_Family )
+	if ptr then free( ptr ) end if
+
+end procedure
+
+public function uiNewDrawTextFontDescriptor()
+
+	atom fd = allocate_data( SIZEOF_UIDRAWTEXTFONTDESCRIPTOR, 1 )
+	mem_set( fd, NULL, SIZEOF_UIDRAWTEXTFONTDESCRIPTOR )
+
+	return delete_routine( fd, routine_id("uiFreeDrawTextFontDescriptor") )
+end function
+
+public function uiDrawTextFontDescriptorGetFamily( atom fd )
+	atom ptr = peek_pointer( fd + uiDrawTextFontDescriptor_Family )
+	return peek_string( ptr )
+end function
+
+public procedure uiDrawTextFontDescriptorSetFamily( atom fd, sequence family )
+
+	atom ptr = peek_pointer( fd + uiDrawTextFontDescriptor_Family )
+	if ptr then free( ptr ) end if
+
+	ptr = allocate_string( family )
+	poke_pointr( fd + uiDrawTextFontDescriptor_Family, ptr )
+
+end procedure
+
 
 
 
