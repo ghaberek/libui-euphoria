@@ -1947,3 +1947,25 @@ public function uiNewColorButton()
 	return c_func( "uiNewColorButton", {} )
 end function
 
+
+
+define_c_proc( libui, "uiFormAppend", {C_POINTER,C_POINTER,C_POINTER,C_INT} )
+public procedure uiFormAppend( atom f, sequence _label, atom c, atom stretchy )
+    c_proc( "uiFormAppend", {f,allocate_string(_label,1),c,stretchy} )
+end procedure
+
+define_c_func( libui, "uiFormPadded", {C_POINTER}, C_INT )
+public procedure uiFormPadded( atom f )
+    c_proc( "uiFormPadded", {f} )
+end procedure
+
+define_c_proc( libui, "uiFormSetPadded", {C_POINTER,C_INT} )
+public procedure uiFormSetPadded( atom f, atom padded )
+    c_proc( "uiFormSetPadded", {f,padded} )
+end procedure
+
+define_c_func( libui, "uiNewForm", {}, C_POINTER )
+public function uiNewForm()
+    return c_func( "uiNewForm", {} )
+end function
+
