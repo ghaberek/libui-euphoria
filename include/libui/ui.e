@@ -1702,11 +1702,199 @@ public procedure uiDrawTextFontDescriptorSetFamily( atom fd, sequence family )
 	if ptr then free( ptr ) end if
 
 	ptr = allocate_string( family )
-	poke_pointr( fd + uiDrawTextFontDescriptor_Family, ptr )
+	poke_pointer( fd + uiDrawTextFontDescriptor_Family, ptr )
 
 end procedure
 
 
+
+constant
+	uiDrawTextFontMetrics_Ascent				=  0, -- double
+	uiDrawTextFontMetrics_Descent				=  8, -- double
+	uiDrawTextFontMetrics_Leading				= 16, -- double
+	uiDrawTextFontMetrics_UnderlinePos			= 24, -- double
+	uiDrawTextFontMetrics_UnderlineThickness	= 32, -- double
+	SIZEOF_UIDRAWTEXTFONTMETRICS				= 40,
+$
+
+public function uiNewDrawTextFontMetrics()
+
+	atom fm = allocate_data( SIZEOF_UIDRAWTEXTFONTMETRICS, 1 )
+	mem_set( fm, NULL, SIZEOF_UIDRAWTEXTFONTMETRICS )
+
+	return fm
+end function
+
+public function uiDrawTextFontMetricsGetAscent( atom fm )
+	return peek_float64( fm + uiDrawTextFontMetrics_Ascent )
+end function
+
+public procedure uiDrawTextFontMetricsSetAscent( atom fm, atom ascent )
+	poke_float64( fm + uiDrawTextFontMetrics_Ascent, ascent )
+end procedure
+
+public function uiDrawTextFontMetricsGetDescent( atom fm )
+	return peek_float64( fm + uiDrawTextFontMetrics_Descent )
+end function
+
+public procedure uiDrawTextFontMetricsSetDescent( atom fm, atom descent )
+	poke_float64( fm + uiDrawTextFontMetrics_Descent, descent )
+end procedure
+
+public function uiDrawTextFontMetricsGetLeading( atom fm )
+	return peek_float64( fm + uiDrawTextFontMetrics_Leading )
+end function
+
+public procedure uiDrawTextFontMetricsSetLeading( atom fm, atom leading )
+	poke_float64( fm + uiDrawTextFontMetrics_Leading, leading )
+end procedure
+
+public function uiDrawTextFontMetricsGetUnderlinePos( atom fm )
+	return peek_float64( fm + uiDrawTextFontMetrics_UnderlinePos )
+end function
+
+public procedure uiDrawTextFontMetricsSetUnderlinePos( atom fm, atom pos )
+	poke_float64( fm + uiDrawTextFontMetrics_UnderlinePos, pos )
+end procedure
+
+public function uiDrawTextFontMetricsGetUnderlineThickness( atom fm )
+	return peek_float64( fm + uiDrawTextFontMetrics_UnderlineThickness )
+end function
+
+public procedure uiDrawTextFontMetricsSetUnderlineThickness( atom fm, atom thickness )
+	poke_float64( fm + uiDrawTextFontMetrics_UnderlineThickness, thickness )
+end procedure
+
+
+
+define_c_func( libui, "uiDrawLoadClosestFont", {C_POINTER}, C_POINTER )
+public function uiDrawLoadClosestFont( atom desc )
+	return c_func( "uiDrawLoadClosestFont", {desc} )
+end function
+
+define_c_proc( libui, "uiDrawFreeTextFont", {C_POINTER} )
+public procedure uiDrawFreeTextFont( atom font )
+	c_proc( "uiDrawFreeTextFont", {font} )
+end procedure
+
+define_c_func( libui, "uiDrawTextFontHandle", {C_POINTER}, C_POINTER )
+public function uiDrawTextFontHandle( atom font )
+	return c_func( "uiDrawTextFontHandle", {font} )
+end function
+
+define_c_proc( libui, "uiDrawTextFontDescribe", {C_POINTER,C_POINTER} )
+public procedure uiDrawTextFontDescribe( atom font, atom desc )
+	c_proc( "uiDrawTextFontDescribe", {font,desc} )
+end procedure
+
+-- TODO make copy with given attributes methods?
+-- TODO yuck this name
+
+define_c_proc( libui, "uiDrawTextFontGetMetrics", {C_POINTER,C_POINTER} )
+public procedure uiDrawTextFontGetMetrics( atom font, atom metrics )
+	c_proc( "uiDrawTextFontGetMetrics", {font,metrics} )
+end procedure
+
+-- TODO initial line spacing? and what about leading?
+
+define_c_func( libui, "uiDrawNewTextLayout", {C_POINTER,C_POINTER,C_DOUBLE}, C_POINTER )
+public function uiDrawNewTextLayout( sequence text, atom defaultFont, atom width )
+	return c_func( "uiDrawNewTextLayout", {allocate_string(text,1),defaultFont,width} )
+end function
+
+define_c_proc( libui, "uiDrawFreeTextLayout", {C_POINTER} )
+public procedure uiDrawFreeTextLayout( atom layout )
+	c_proc( "uiDrawFreeTextLayout", {layout} )
+end procedure
+
+-- TODO get width
+
+define_c_proc( libui, "uiDrawTextLayoutSetWidth", {C_POINTER,C_DOUBLE} )
+public procedure uiDrawTextLayoutSetWidth( atom layout, atom width )
+	c_proc( "uiDrawTextLayoutSetWidth", {layout,width} )
+end procedure
+
+define_c_proc( libui, "uiDrawTextLayoutExtents", {C_POINTER,C_POINTER,C_POINTER} )
+public function uiDrawTextLayoutExtents( atom layout )
+
+	atom ptr = allocate_data( sizeof(C_POINTER)*2, 1 )
+
+	atom width  = ptr + sizeof(C_POINTER)*0
+	atom height = ptr + sizeof(C_POINTER)*1
+
+	c_proc( "uiDrawTextLayoutExtents", {layout,width,height} )
+
+	return peek_float64({ ptr, 2 })
+end function
+
+-- and the attributes that you can set on a text layout
+
+define_c_proc( libui, "uiDrawTextLayoutSetColor", {C_POINTER,C_INT,C_INT,C_DOUBLE,C_DOUBLE,C_DOUBLE,C_DOUBLE} )
+public procedure uiDrawTextLayoutSetColor( atom layout, atom startChar, atom endChar, atom r, atom g, atom b, atom a )
+	c_proc( "uiDrawTextLayoutSetColor", {layout,startChar,endChar,r,g,b,a} )
+end procedure
+
+define_c_proc( libui, "uiDrawText", {C_POINTER,C_DOUBLE,C_DOUBLE,C_POINTER} )
+public procedure uiDrawText( atom c, atom x, atom y, atom layout )
+	c_proc( "uiDrawText", {c,x,y,layout} )
+end procedure
+
+
+
+public enum type uiModifiers
+
+	uiModifierCtrl	= #01, -- 1 << 0
+	uiModifierAlt	= #02, -- 1 << 1
+	uiModifierShift	= #04, -- 1 << 2
+	uiModifierSuper	= #08  -- 1 << 3
+
+end type
+
+
+
+public enum type uiExtKey
+
+	uiExtKeyEscape,
+	uiExtKeyInsert,		-- equivalent to "Help" on Apple keyboards
+	uiExtKeyDelete,
+	uiExtKeyHome,
+	uiExtKeyEnd,
+	uiExtKeyPageUp,
+	uiExtKeyPageDown,
+	uiExtKeyUp,
+	uiExtKeyDown,
+	uiExtKeyLeft,
+	uiExtKeyRight,
+	uiExtKeyF1,			-- F1..F12 are guaranteed to be consecutive
+	uiExtKeyF2,
+	uiExtKeyF3,
+	uiExtKeyF4,
+	uiExtKeyF5,
+	uiExtKeyF6,
+	uiExtKeyF7,
+	uiExtKeyF8,
+	uiExtKeyF9,
+	uiExtKeyF10,
+	uiExtKeyF11,
+	uiExtKeyF12,
+	uiExtKeyN0,			-- numpad keys; independent of Num Lock state
+	uiExtKeyN1,			-- N0..N9 are guaranteed to be consecutive
+	uiExtKeyN2,
+	uiExtKeyN3,
+	uiExtKeyN4,
+	uiExtKeyN5,
+	uiExtKeyN6,
+	uiExtKeyN7,
+	uiExtKeyN8,
+	uiExtKeyN9,
+	uiExtKeyNDot,
+	uiExtKeyNEnter,
+	uiExtKeyNAdd,
+	uiExtKeyNSubtract,
+	uiExtKeyNMultiply,
+	uiExtKeyNDivide
+
+end type
 
 
 -- TODO SetFont, mechanics
