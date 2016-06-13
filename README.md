@@ -9,6 +9,11 @@
 
 ## History
 
+### June 13, 2016
+
+* Added more examples
+* Wrapped `uiGrid` control
+
 ### June 9, 2016
 
 * Wrapped more draw functions
