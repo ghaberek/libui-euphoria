@@ -1969,3 +1969,47 @@ public function uiNewForm()
     return c_func( "uiNewForm", {} )
 end function
 
+
+
+public enum type uiAlign
+
+	uiAlignFill = 0,
+	uiAlignStart,
+	uiAlignCenter,
+	uiAlignEnd
+
+end type
+
+public enum type uiAt
+
+	uiAtLeading = 0,
+	uiAtTop,
+	uiAtTrailing,
+	uiAtBottom
+
+end type
+
+define_c_proc( libui, "uiGridAppend", {C_POINTER,C_POINTER,C_INT,C_INT,C_INT,C_INT,C_INT,C_INT,C_INT,C_INT} )
+public procedure uiGridAppend( atom g, atom c, atom left, atom top, atom xspan, atom yspan, atom hexpand, atom halign, atom vexpand, atom valign )
+	c_proc( "uiGridAppend", {g,c,left,top,xspan,yspan,hexpand,halign,vexpand,valign} )
+end procedure
+
+define_c_proc( libui, "uiGridInsertAt", {C_POINTER,C_POINTER,C_POINTER,C_INT,C_INT,C_INT,C_INT,C_INT,C_INT,C_INT,C_INT,C_INT} )
+public procedure uiGridInsertAt( atom g, atom c, atom existing, atom at,atom left, atom top, atom xspan, atom yspan, atom hexpand, atom halign, atom vexpand, atom valign )
+	c_proc( "uiGridInsertAt", {g,c,existing,at,left,top,xspan,yspan,hexpand,halign,vexpand,valign} )
+end procedure
+
+define_c_func( libui, "uiGridPadded", {C_POINTER}, C_INT )
+public function uiGridPadded( atom g )
+	return c_func( "uiGridPadded", {g} )
+end function
+
+define_c_proc( libui, "uiGridSetPadded", {C_POINTER,C_INT} )
+public procedure uiGridSetPadded( atom g, atom padded )
+	c_proc( "uiGridSetPadded", {g,padded} )
+end procedure
+
+define_c_func( libui, "uiNewGrid", {}, C_POINTER )
+public function uiNewGrid()
+	return c_func( "uiNewGrid", {} )
+end function
