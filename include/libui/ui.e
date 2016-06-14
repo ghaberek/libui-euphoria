@@ -171,12 +171,12 @@ end procedure
 
 define_c_proc( libui, "uiQueueMain", {C_POINTER,C_POINTER} )
 public procedure uiQueueMain( object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiQueueMain", {call_back(id),data} )
+	c_proc( "uiQueueMain", {call_back({'+', id}),data} )
 end procedure
 
 define_c_proc( libui, "uiOnShouldQuit", {C_POINTER,C_POINTER} )
 public procedure uiOnShouldQuit( object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiOnShouldQuit", {call_back(id),data} )
+	c_proc( "uiOnShouldQuit", {call_back({'+', id}),data} )
 end procedure
 
 define_c_proc( libui, "uiFreeText", {C_POINTER} )
@@ -278,7 +278,7 @@ end procedure
 
 define_c_proc( libui, "uiWindowOnClosing", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiWindowOnClosing( atom w, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiWindowOnClosing", {w,call_back(id),data} )
+	c_proc( "uiWindowOnClosing", {w,call_back({'+', id}),data} )
 end procedure
 
 define_c_proc( libui, "uiWindowSetChild", {C_POINTER,C_POINTER} )
@@ -326,7 +326,7 @@ end procedure
 
 define_c_proc( libui, "uiButtonOnClicked", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiButtonOnClicked( atom b, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiButtonOnClicked", {b,call_back(id),data} )
+	c_proc( "uiButtonOnClicked", {b,call_back({'+', id}),data} )
 end procedure
 
 define_c_func( libui, "uiNewButton", {C_POINTER}, C_POINTER )
@@ -391,7 +391,7 @@ end procedure
 
 define_c_proc( libui, "uiCheckboxOnToggled", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiCheckboxOnToggled( atom c, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiCheckboxOnToggled", {c,call_back(id),data} )
+	c_proc( "uiCheckboxOnToggled", {c,call_back({'+', id}),data} )
 end procedure
 
 define_c_func( libui, "uiCheckboxChecked", {C_POINTER}, C_INT )
@@ -434,7 +434,7 @@ end procedure
 
 define_c_proc( libui, "uiEntryOnChanged", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiEntryOnChanged( atom e, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiEntryOnChanged", {e,call_back(id),data} )
+	c_proc( "uiEntryOnChanged", {e,call_back({'+', id}),data} )
 end procedure
 
 define_c_func( libui, "uiEntryReadOnly", {C_POINTER}, C_INT )
@@ -584,7 +584,7 @@ end procedure
 
 define_c_proc( libui, "uiSpinboxOnChanged", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiSpinboxOnChanged( atom s, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiSpinboxOnChanged", {s,call_back(id),data} )
+	c_proc( "uiSpinboxOnChanged", {s,call_back({'+', id}),data} )
 end procedure
 
 define_c_func( libui, "uiNewSpinbox", {C_INT,C_INT}, C_POINTER )
@@ -606,7 +606,7 @@ end procedure
 
 define_c_proc( libui, "uiSliderOnChanged", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiSliderOnChanged( atom s, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiSliderOnChanged", {s,call_back(id),data} )
+	c_proc( "uiSliderOnChanged", {s,call_back({'+', id}),data} )
 end procedure
 
 define_c_func( libui, "uiNewSlider", {C_INT,C_INT}, C_POINTER )
@@ -659,7 +659,7 @@ end procedure
 
 define_c_proc( libui, "uiComboboxOnSelected", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiComboboxOnSelected( atom c, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiComboboxOnSelected", {c,call_back(id),data} )
+	c_proc( "uiComboboxOnSelected", {c,call_back({'+', id}),data} )
 end procedure
 
 define_c_func( libui, "uiNewCombobox", {}, C_POINTER )
@@ -700,7 +700,7 @@ end procedure
 
 define_c_proc( libui, "uiEditableComboboxOnChanged", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiEditableComboboxOnChanged( atom c, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiEditableComboboxOnChanged", {c,call_back(id),data} )
+	c_proc( "uiEditableComboboxOnChanged", {c,call_back({'+', id}),data} )
 end procedure
 
 define_c_func( libui, "uiNewEditableCombobox", {}, C_POINTER )
@@ -727,7 +727,7 @@ end procedure
 
 define_c_proc( libui, "uiRadioButtonsOnSelected", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiRadioButtonsOnSelected( atom r, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiRadioButtonsOnSelected", {r,call_back(id),data} )
+	c_proc( "uiRadioButtonsOnSelected", {r,call_back({'+', id}),data} )
 end procedure
 
 define_c_func( libui, "uiNewRadioButtons", {}, C_POINTER )
@@ -784,7 +784,7 @@ end procedure
 
 define_c_proc( libui, "uiMultilineEntryOnChanged", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiMultilineEntryOnChanged( atom e, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiMultilineEntryOnChanged", {e,call_back(id),data} )
+	c_proc( "uiMultilineEntryOnChanged", {e,call_back({'+', id}),data} )
 end procedure
 
 define_c_func( libui, "uiMultilineEntryReadOnly", {C_POINTER}, C_INT )
@@ -821,7 +821,7 @@ end procedure
 
 define_c_proc( libui, "uiMenuItemOnClicked", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiMenuItemOnClicked( atom m, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiMenuItemOnClicked", {m,call_back(id),data} )
+	c_proc( "uiMenuItemOnClicked", {m,call_back({'+', id}),data} )
 end procedure
 
 define_c_func( libui, "uiMenuItemChecked", {C_POINTER}, C_INT )
@@ -968,23 +968,23 @@ public function uiNewAreaHandler()
 end function
 
 public procedure uiAreaSetDrawHandler( atom ah, object func, atom id = routine_id(func) )
-	poke_pointer( ah + uiAreaHandler_Draw, call_back(id) )
+	poke_pointer( ah + uiAreaHandler_Draw, call_back({'+', id}) )
 end procedure
 
 public procedure uiAreaSetMouseEventHandler( atom ah, object func, atom id = routine_id(func) )
-	poke_pointer( ah + uiAreaHandler_MouseEvent, call_back(id) )
+	poke_pointer( ah + uiAreaHandler_MouseEvent, call_back({'+', id}) )
 end procedure
 
 public procedure uiAreaSetMouseCrossedHandler( atom ah, object func, atom id = routine_id(func) )
-	poke_pointer( ah + uiAreaHandler_MouseCrossed, call_back(id) )
+	poke_pointer( ah + uiAreaHandler_MouseCrossed, call_back({'+', id}) )
 end procedure
 
 public procedure uiAreaSetDragBrokenHandler( atom ah, object func, atom id = routine_id(func) )
-	poke_pointer( ah + uiAreaHandler_DragBroken, call_back(id) )
+	poke_pointer( ah + uiAreaHandler_DragBroken, call_back({'+', id}) )
 end procedure
 
 public procedure uiAreaSetKeyEventHandler( atom ah, object func, atom id = routine_id(func) )
-	poke_pointer( ah + uiAreaHandler_KeyEvent, call_back(id) )
+	poke_pointer( ah + uiAreaHandler_KeyEvent, call_back({'+', id}) )
 end procedure
 
 
@@ -1906,7 +1906,7 @@ end function
 
 define_c_proc( libui, "uiFontButtonOnChanged", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiFontButtonOnChanged( atom b, object func, atom data = NULL, atom id = routine_id(data) )
-	c_proc( "uiFontButtonOnChanged", {b,call_back(id),data} )
+	c_proc( "uiFontButtonOnChanged", {b,call_back({'+', id}),data} )
 end procedure
 
 define_c_func( libui, "uiNewFontButton", {}, C_POINTER )
@@ -1939,7 +1939,7 @@ end procedure
 
 define_c_proc( libui, "uiColorButtonOnChanged", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiColorButtonOnChanged( atom bt, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiColorButtonOnChanged", {bt,call_back(id),data} )
+	c_proc( "uiColorButtonOnChanged", {bt,call_back({'+', id}),data} )
 end procedure
 
 define_c_func( libui, "uiNewColorButton", {}, C_POINTER )
