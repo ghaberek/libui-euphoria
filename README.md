@@ -4,8 +4,11 @@
 
 ## Status
 
-- [x] Wrapper code is complete; new features will be added as they arrive in [libui](https://github.com/andlabs/libui)
-- [ ] Waiting on the completion of [#25](https://github.com/andlabs/libui/issues/25) in order to consider the wrapper stable for release
+- [x] Wrapper code is complete; new features will be added as they arrive in [libui](https://github.com/andlabs/libui).
+- [x] ~~Waiting on the completion of [#25](https://github.com/andlabs/libui/issues/25) in order to consider the wrapper stable for release.~~ (done)
+- [ ] Testing is incomplete. More examples are welcome.
+
+This wrapper should be stable but keep in mind that [libui](https://github.com/andlabs/libui) is still in [alpha](https://github.com/andlabs/libui/blob/master/TODO.md) status.
 
 ## History
 
@@ -13,6 +16,8 @@
 
 * Added more examples
 * Wrapped `uiGrid` control
+* Changed `call_back()` lines to use CDECL
+* Fixed memory allocation in `uiDrawTextLayoutExtents`
 
 ### June 9, 2016
 
