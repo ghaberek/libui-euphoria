@@ -1817,10 +1817,10 @@ end procedure
 define_c_proc( libui, "uiDrawTextLayoutExtents", {C_POINTER,C_POINTER,C_POINTER} )
 public function uiDrawTextLayoutExtents( atom layout )
 
-	atom ptr = allocate_data( sizeof(C_POINTER)*2, 1 )
+	atom ptr = allocate_data( sizeof(C_DOUBLE)*2, 1 )
 
-	atom width  = ptr + sizeof(C_POINTER)*0
-	atom height = ptr + sizeof(C_POINTER)*1
+	atom width  = ptr + sizeof(C_DOUBLE)*0
+	atom height = ptr + sizeof(C_DOUBLE)*1
 
 	c_proc( "uiDrawTextLayoutExtents", {layout,width,height} )
 
