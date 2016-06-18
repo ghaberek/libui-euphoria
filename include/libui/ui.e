@@ -285,6 +285,7 @@ define_c_proc( libui, "uiWindowPosition", {C_POINTER,C_POINTER,C_POINTER} )
 public function uiWindowPosition( atom w )
 
 	atom ptr = allocate_data( sizeof(C_INT)*2, 1 )
+	mem_set( ptr, NULL, sizeof(C_INT)*2 )
 
 	atom x = ptr + sizeof(C_INT)*0
 	atom y = ptr + sizeof(C_INT)*1
@@ -309,6 +310,25 @@ public procedure uiWindowOnPositionChanged( atom w, object func, atom data = NUL
 	c_proc( "uiWindowOnPositionChanged", {w,call_back({'+', id}),data} )
 end procedure
 
+define_c_proc( libui, "uiWindowContentSize", {C_POINTER,C_POINTER,C_POINTER} )
+public function uiWindowContentSize( atom w )
+
+	atom ptr = allocate_data( sizeof(C_INT)*2, 1 )
+	mem_set( ptr, NULL, sizeof(C_INT)*2 )
+
+	atom width  = ptr + sizeof(C_INT)*0
+	atom height = ptr + sizeof(C_INT)*1
+
+	c_proc( "uiWindowContentSize", {w,width,height} )
+
+	return {width,height}
+end function
+
+define_c_proc( libui, "uiWindowSetContentSize", {C_POINTER,C_INT,C_INT} )
+public procedure uiWindowSetContentSize( atom w, atom width, atom height )
+	c_proc( "uiWindowSetContentSize", {w,width,height} )
+end procedure
+
 define_c_func( libui, "uiWindowFullscreen", {C_POINTER}, C_INT )
 public function uiWindowFullscreen( atom w )
 	return c_func( "uiWindowFullscreen", {w} )
@@ -317,6 +337,11 @@ end function
 define_c_proc( libui, "uiWindowSetFullscreen", {C_POINTER,C_INT} )
 public procedure uiWindowSetFullscreen( atom w, atom fullscreen )
 	c_proc( "uiWindowSetFullscreen", {w,fullscreen} )
+end procedure
+
+define_c_proc( libui, "uiWindowOnContentSizeChanged", {C_POINTER,C_POINTER,C_POINTER} )
+public procedure uiWindowOnContentSizeChanged( atom w, object func, atom data = NULL, atom id = routine_id(func) )
+	c_proc( "uiWindowOnContentSizeChanged", {w,call_back({'+', id}),data} )
 end procedure
 
 define_c_proc( libui, "uiWindowOnClosing", {C_POINTER,C_POINTER,C_POINTER} )
@@ -1869,6 +1894,7 @@ define_c_proc( libui, "uiDrawTextLayoutExtents", {C_POINTER,C_POINTER,C_POINTER}
 public function uiDrawTextLayoutExtents( atom layout )
 
 	atom ptr = allocate_data( sizeof(C_DOUBLE)*2, 1 )
+	mem_set( ptr, NULL, sizeof(C_DOUBLE)*2 )
 
 	atom width  = ptr + sizeof(C_DOUBLE)*0
 	atom height = ptr + sizeof(C_DOUBLE)*1
