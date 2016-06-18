@@ -157,9 +157,14 @@ public procedure uiMain()
 	c_proc( "uiMain", {} )
 end procedure
 
+define_c_proc( libui, "uiMainSteps", {} )
+public procedure uiMainSteps()
+	c_proc( "uiMainSteps", {} )
+end procedure
+
 define_c_func( libui, "uiMainStep", {C_INT}, C_INT )
 public function uiMainStep( atom wait )
-	return c_func( "uiMainStep", wait )
+	return c_func( "uiMainStep", {wait} )
 end function
 
 define_c_proc( libui, "uiQuit", {} )
