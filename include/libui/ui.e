@@ -314,6 +314,16 @@ public procedure uiWindowOnClosing( atom w, object func, atom data = NULL, atom 
 	c_proc( "uiWindowOnClosing", {w,call_back({'+', id}),data} )
 end procedure
 
+define_c_func( libui, "uiWindowBorderless", {C_POINTER}, C_INT )
+public function uiWindowBorderless( atom w )
+	return c_func( "uiWindowBorderless", {w} )
+end function
+
+define_c_proc( libui, "uiWindowSetBorderless", {C_POINTER,C_INT} )
+public procedure uiWindowSetBorderless( atom w, atom borderless )
+	c_proc( "uiWindowSetBorderless", {w,borderless} )
+end procedure
+
 define_c_proc( libui, "uiWindowSetChild", {C_POINTER,C_POINTER} )
 public procedure uiWindowSetChild( atom w, atom child )
 	c_proc( "uiWindowSetChild", {w,child} )
