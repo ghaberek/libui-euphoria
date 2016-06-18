@@ -716,6 +716,11 @@ public function uiNewHorizontalSeparator()
 	return c_func( "uiNewHorizontalSeparator", {} )
 end function
 
+define_c_func( libui, "uiNewVerticalSeparator", {}, C_POINTER )
+public function uiNewVerticalSeparator()
+	return c_func( "uiNewVerticalSeparator", {} )
+end function
+
 
 
 define_c_proc( libui, "uiComboboxAppend", {C_POINTER,C_POINTER} )
