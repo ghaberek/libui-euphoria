@@ -12,6 +12,17 @@ This wrapper should be stable but keep in mind that [libui](https://github.com/a
 
 ## History
 
+### June 17, 2016
+
+* Added `uiFormDelete()`
+* Added `uiProgressBarValue()`
+* Added `uiMainSteps()`
+* Added `uiNewVerticalSeparator()`
+* Added window position functions
+* Added window borderless functions
+* Added window fullscreen functions
+* Added Window content size functions
+
 ### June 13, 2016
 
 * Added more examples
