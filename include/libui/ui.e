@@ -1954,6 +1954,11 @@ public procedure uiFormAppend( atom f, sequence _label, atom c, atom stretchy )
     c_proc( "uiFormAppend", {f,allocate_string(_label,1),c,stretchy} )
 end procedure
 
+define_c_proc( libui, "uiFormDelete", {C_POINTER,C_INT} )
+public procedure uiFormDelete( atom f, atom index )
+	c_proc( "uiFormDelete", {f,index} )
+end procedure
+
 define_c_func( libui, "uiFormPadded", {C_POINTER}, C_INT )
 public procedure uiFormPadded( atom f )
     c_proc( "uiFormPadded", {f} )
