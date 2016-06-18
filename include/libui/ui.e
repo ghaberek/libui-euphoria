@@ -309,6 +309,16 @@ public procedure uiWindowOnPositionChanged( atom w, object func, atom data = NUL
 	c_proc( "uiWindowOnPositionChanged", {w,call_back({'+', id}),data} )
 end procedure
 
+define_c_func( libui, "uiWindowFullscreen", {C_POINTER}, C_INT )
+public function uiWindowFullscreen( atom w )
+	return c_func( "uiWindowFullscreen", {w} )
+end function
+
+define_c_proc( libui, "uiWindowSetFullscreen", {C_POINTER,C_INT} )
+public procedure uiWindowSetFullscreen( atom w, atom fullscreen )
+	c_proc( "uiWindowSetFullscreen", {w,fullscreen} )
+end procedure
+
 define_c_proc( libui, "uiWindowOnClosing", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiWindowOnClosing( atom w, object func, atom data = NULL, atom id = routine_id(func) )
 	c_proc( "uiWindowOnClosing", {w,call_back({'+', id}),data} )
