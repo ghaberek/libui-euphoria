@@ -644,12 +644,10 @@ end function
 
 
 
--- TODO implement uiProgressBarValue
-
---define_c_func( libui, "uiProgressBarValue", {C_POINTER}, C_INT )
---public function uiProgressBarValue( atom p )
---	return c_func( "uiProgressBarValue", {p} )
---end function
+define_c_func( libui, "uiProgressBarValue", {C_POINTER}, C_INT )
+public function uiProgressBarValue( atom p )
+	return c_func( "uiProgressBarValue", {p} )
+end function
 
 define_c_proc( libui, "uiProgressBarSetValue", {C_POINTER,C_INT} )
 public procedure uiProgressBarSetValue( atom p, atom n )
