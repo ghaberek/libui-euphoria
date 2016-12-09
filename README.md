@@ -5,12 +5,18 @@
 ## Status
 
 - [x] Wrapper code is complete; new features will be added as they arrive in [libui](https://github.com/andlabs/libui).
-- [x] ~~Waiting on the completion of [#25](https://github.com/andlabs/libui/issues/25) in order to consider the wrapper stable for release.~~ (done)
 - [ ] Testing is incomplete. More examples are welcome.
 
-This wrapper should be stable but keep in mind that [libui](https://github.com/andlabs/libui) is still in [alpha](https://github.com/andlabs/libui/blob/master/TODO.md) status.
+This wrapper should be stable but keep in mind that [libui](https://github.com/andlabs/libui) is still in
+ [alpha](https://github.com/andlabs/libui/blob/master/TODO.md) status.
 
 ## History
+
+### December 9, 2016
+
+* Added new position functions
+* Added more `uiDrawBrush` functions
+* Removed old position functions
 
 ### June 17, 2016
 
@@ -56,7 +62,11 @@ This wrapper should be stable but keep in mind that [libui](https://github.com/a
 
 ### Wrapper Style
 
-A keen observer might notice the seemingly unorthodox C wrapper code used in `ui.e`. What I've done here, is use a `map` to provide string lookups for function names instead of using constants. This is an experiment in providing a cleaner C library wrapper. The calls to `define_c_func/proc` look a lot more like [attributes](https://msdn.microsoft.com/en-us/library/z0w1kczw.aspx) used in C# or VB.NET. I have not compared this method to using constants, so I'm not sure if or by how much this might be slower.
+A keen observer might notice the seemingly unorthodox C wrapper code used in `ui.e`. What I've done here, is use a `map`
+ to provide string lookups for function names instead of using constants. This is an experiment in providing a cleaner
+ C library wrapper. The calls to `define_c_func/proc` look a lot more like [attributes](https://msdn.microsoft.com/en-us/library/z0w1kczw.aspx)
+ used in C# or VB.NET. I have not compared this method to using constants, so I'm not sure if or by how much this might
+ be slower.
 
 #### Original Code
 
