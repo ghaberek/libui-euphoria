@@ -281,6 +281,7 @@ public procedure uiWindowSetTitle( atom w, sequence title )
 	c_proc( "uiWindowSetTitle", {w,allocate_string(title)} )
 end procedure
 
+/*
 define_c_proc( libui, "uiWindowPosition", {C_POINTER,C_POINTER,C_POINTER} )
 public function uiWindowPosition( atom w )
 
@@ -294,21 +295,28 @@ public function uiWindowPosition( atom w )
 
 	return peek4s({ ptr, 2 })
 end function
+*/
 
+/*
 define_c_proc( libui, "uiWindowSetPosition", {C_POINTER,C_INT,C_INT} )
 public procedure uiWindowSetPosition( atom w, atom x, atom y )
 	c_proc( "uiWindowSetPosition", {w,x,y} )
 end procedure
+*/
 
+/*
 define_c_proc( libui, "uiWindowCenter", {C_POINTER} )
 public procedure uiWindowCenter( atom w )
 	c_proc( "uiWindowCenter", {w} )
 end procedure
+*/
 
+/*
 define_c_proc( libui, "uiWindowOnPositionChanged", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiWindowOnPositionChanged( atom w, object func, atom data = NULL, atom id = routine_id(func) )
 	c_proc( "uiWindowOnPositionChanged", {w,call_back({'+', id}),data} )
 end procedure
+*/
 
 define_c_proc( libui, "uiWindowContentSize", {C_POINTER,C_POINTER,C_POINTER} )
 public function uiWindowContentSize( atom w )
