@@ -1021,6 +1021,16 @@ public procedure uiAreaScrollTo( atom a, atom x, atom y, atom width, atom height
 	c_proc( "uiAreaScrollTo", {a,x,y,width,height} )
 end procedure
 
+define_c_proc( libui, "uiAreaBeginUserWindowMove", {C_POINTER} )
+public procedure uiAreaBeginUserWindowMove( atom a )
+	c_proc( "uiAreaBeginUserWindowMove", {a} )
+end procedure
+
+define_c_proc( libui, "uiAreaBeginUserWindowResize", {C_POINTER,C_INT} )
+public procedure uiAreaBeginUserWindowResize( atom a, atom edge )
+	c_proc( "uiAreaBeginUserWindowResize", {a,edge} )
+end procedure
+
 
 
 ifdef BITS64 then
