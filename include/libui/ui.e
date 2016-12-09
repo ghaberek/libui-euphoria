@@ -1271,21 +1271,53 @@ public procedure uiDrawBrushSetType( atom db, atom brushType )
 	poke4( db + uiDrawBrush_Type, brushType )
 end procedure
 
+public function uiDrawBrushGetColorR( atom db )
+	return peek_float64( db + uiDrawBrush_R )
+end function
+
+public function uiDrawBrushGetColorG( atom db )
+	return peek_float64( db + uiDrawBrush_G )
+end function
+
+public function uiDrawBrushGetColorB( atom db )
+	return peek_float64( db + uiDrawBrush_B )
+end function
+
+public function uiDrawBrushGetAlpha( atom db )
+	return peek_float64( db + uiDrawBrush_A )
+end function
+
 public function uiDrawBrushGetColor( atom db )
 	return {
-		peek_float64( db + uiDrawBrush_R ),
-		peek_float64( db + uiDrawBrush_G ),
-		peek_float64( db + uiDrawBrush_B ),
-		peek_float64( db + uiDrawBrush_A )
+		uiDrawBrushGetColorR( db ),
+		uiDrawBrushGetColorG( db ),
+		uiDrawBrushGetColorB( db ),
+		uiDrawBrushGetAlpha( db )
 	}
 end function
 
+public procedure uiDrawBrushSetColorR( atom db, atom r )
+	poke_float64( db + uiDrawBrush_R, r )
+end procedure
+
+public procedure uiDrawBrushSetColorG( atom db, atom g )
+	poke_float64( db + uiDrawBrush_G, g )
+end procedure
+
+public procedure uiDrawBrushSetColorB( atom db, atom b )
+	poke_float64( db + uiDrawBrush_B, b )
+end procedure
+
+public procedure uiDrawBrushSetAlpha( atom db, atom a )
+	poke_float64( db + uiDrawBrush_A, a )
+end procedure
+
 public procedure uiDrawBrushSetColor( atom db, atom r, atom g, atom b, atom a )
 
-	poke_float64( db + uiDrawBrush_R, r )
-	poke_float64( db + uiDrawBrush_G, g )
-	poke_float64( db + uiDrawBrush_B, b )
-	poke_float64( db + uiDrawBrush_A, a )
+	uiDrawBrushSetColorR( db, r )
+	uiDrawBrushSetColorG( db, r )
+	uiDrawBrushSetColorB( db, r )
+	uiDrawBrushSetAlpha( db, a )
 
 end procedure
 
