@@ -12,6 +12,16 @@ This wrapper should be stable but keep in mind that [libui](https://github.com/a
 
 ## History
 
+### February 22, 2018
+
+* Added DEBUG output to define_c_func/proc
+* Added `uiControlVerifySetParent()`
+* Added `uiControlEnabledToUser()`
+* Added `uiUserBugCannotSetParentOnToplevel()`
+* Added blurb about position routines to comments
+* Added test for `-1` in event handler assignment
+* Removed missing `uiDraw` functions
+
 ### December 9, 2016
 
 * Added new position functions

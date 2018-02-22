@@ -85,6 +85,10 @@ function define_c_func( atom lib, sequence name, sequence ptypes, atom rtype )
 	if id = -1 then error:crash( "%s not found", {name} ) end if
 	map:put( id_lookup, name, id )
 
+ifdef DEBUG then
+	printf(  1, "%s = %d\n", {name,id} )
+end ifdef
+
 	return id
 end function
 
@@ -93,6 +97,10 @@ function define_c_proc( atom lib, sequence name, sequence ptypes )
 	atom id = dll:define_c_proc( lib, "+" & name, ptypes )
 	if id = -1 then error:crash( "%s not found", {name} ) end if
 	map:put( id_lookup, name, id )
+
+ifdef DEBUG then
+	printf(  1, "%s = %d\n", {name,id} )
+end ifdef
 
 	return id
 end function
@@ -120,7 +128,9 @@ end procedure
 atom libui = open_dll({ "libui.dll", "libui.so.0", "libui.A.dylib" })
 if libui = NULL then error:crash( "libui not found" ) end if
 
-
+ifdef DEBUG then
+	printf( 1, "libui = #%08x\n", libui )
+end ifdef
 
 define_c_func( libui, "uiInit", {C_POINTER}, C_POINTER )
 public function uiInit( atom options = NULL )
@@ -181,7 +191,9 @@ end procedure
 
 define_c_proc( libui, "uiOnShouldQuit", {C_POINTER,C_POINTER} )
 public procedure uiOnShouldQuit( object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiOnShouldQuit", {call_back({'+', id}),data} )
+	if id != -1 then
+		c_proc( "uiOnShouldQuit", {call_back({'+', id}),data} )
+	end if
 end procedure
 
 define_c_proc( libui, "uiFreeText", {C_POINTER} )
@@ -259,6 +271,24 @@ public procedure uiFreeControl( atom c )
 end procedure
 
 
+-- TODO make sure all controls have these
+
+define_c_proc( libui, "uiControlVerifySetParent", {C_POINTER,C_POINTER} )
+public procedure uiControlVerifySetParent( atom c, atom p )
+	c_proc( "uiControlVerifySetParent", {c,p} )
+end procedure
+
+define_c_func( libui, "uiControlEnabledToUser", {C_POINTER}, C_INT )
+public function uiControlEnabledToUser( atom c )
+	return c_func( "uiControlEnabledToUser", {c} )
+end function
+
+define_c_proc( libui, "uiUserBugCannotSetParentOnToplevel", {C_POINTER} )
+public procedure uiUserBugCannotSetParentOnToplevel( atom _type )
+	c_proc( "uiUserBugCannotSetParentOnToplevel", {_type} )
+end procedure
+
+
 
 define_c_func( libui, "uiWindowTitle", {C_POINTER}, C_POINTER )
 public function uiWindowTitle( atom w )
@@ -280,6 +310,19 @@ define_c_proc( libui, "uiWindowSetTitle", {C_POINTER,C_POINTER} )
 public procedure uiWindowSetTitle( atom w, sequence title )
 	c_proc( "uiWindowSetTitle", {w,allocate_string(title)} )
 end procedure
+
+-- https://github.com/andlabs/libui/commit/57379474f16b45777ee4de33d99efefe4ac15ce4
+--
+-- ## Announcements
+-- **22 October 2016**
+--
+-- * Due to being unable to guarantee they will work (especially as we move toward
+-- capability-driven window systems like Wayland), or being unable to work without
+-- hacking that breaks other things, the following functions have been removed:
+-- `uiWindowPosition()`, `uiWindowSetPosition()`,`uiWindowCenter()`, and
+-- `uiWindowOnPositionChanged()`. Centering may come back at some point in the
+-- future, albeit in a possibly restricted form. A function to initiate a user
+-- move when a part of a uiArea is clicked will be provided soon.
 
 /*
 define_c_proc( libui, "uiWindowPosition", {C_POINTER,C_POINTER,C_POINTER} )
@@ -314,7 +357,9 @@ end procedure
 /*
 define_c_proc( libui, "uiWindowOnPositionChanged", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiWindowOnPositionChanged( atom w, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiWindowOnPositionChanged", {w,call_back({'+', id}),data} )
+	if id != -1 then
+		c_proc( "uiWindowOnPositionChanged", {w,call_back({'+', id}),data} )
+	end if
 end procedure
 */
 
@@ -349,12 +394,16 @@ end procedure
 
 define_c_proc( libui, "uiWindowOnContentSizeChanged", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiWindowOnContentSizeChanged( atom w, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiWindowOnContentSizeChanged", {w,call_back({'+', id}),data} )
+	if id != -1 then
+		c_proc( "uiWindowOnContentSizeChanged", {w,call_back({'+', id}),data} )
+	end if
 end procedure
 
 define_c_proc( libui, "uiWindowOnClosing", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiWindowOnClosing( atom w, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiWindowOnClosing", {w,call_back({'+', id}),data} )
+	if id != -1 then
+		c_proc( "uiWindowOnClosing", {w,call_back({'+', id}),data} )
+	end if
 end procedure
 
 define_c_func( libui, "uiWindowBorderless", {C_POINTER}, C_INT )
@@ -412,7 +461,9 @@ end procedure
 
 define_c_proc( libui, "uiButtonOnClicked", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiButtonOnClicked( atom b, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiButtonOnClicked", {b,call_back({'+', id}),data} )
+	if id != -1 then
+		c_proc( "uiButtonOnClicked", {b,call_back({'+', id}),data} )
+	end if
 end procedure
 
 define_c_func( libui, "uiNewButton", {C_POINTER}, C_POINTER )
@@ -477,7 +528,9 @@ end procedure
 
 define_c_proc( libui, "uiCheckboxOnToggled", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiCheckboxOnToggled( atom c, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiCheckboxOnToggled", {c,call_back({'+', id}),data} )
+	if id != -1 then
+		c_proc( "uiCheckboxOnToggled", {c,call_back({'+', id}),data} )
+	end if
 end procedure
 
 define_c_func( libui, "uiCheckboxChecked", {C_POINTER}, C_INT )
@@ -520,7 +573,9 @@ end procedure
 
 define_c_proc( libui, "uiEntryOnChanged", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiEntryOnChanged( atom e, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiEntryOnChanged", {e,call_back({'+', id}),data} )
+	if id != -1 then
+		c_proc( "uiEntryOnChanged", {e,call_back({'+', id}),data} )
+	end if
 end procedure
 
 define_c_func( libui, "uiEntryReadOnly", {C_POINTER}, C_INT )
@@ -670,7 +725,9 @@ end procedure
 
 define_c_proc( libui, "uiSpinboxOnChanged", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiSpinboxOnChanged( atom s, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiSpinboxOnChanged", {s,call_back({'+', id}),data} )
+	if id != -1 then
+		c_proc( "uiSpinboxOnChanged", {s,call_back({'+', id}),data} )
+	end if
 end procedure
 
 define_c_func( libui, "uiNewSpinbox", {C_INT,C_INT}, C_POINTER )
@@ -692,7 +749,9 @@ end procedure
 
 define_c_proc( libui, "uiSliderOnChanged", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiSliderOnChanged( atom s, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiSliderOnChanged", {s,call_back({'+', id}),data} )
+	if id != -1 then
+		c_proc( "uiSliderOnChanged", {s,call_back({'+', id}),data} )
+	end if
 end procedure
 
 define_c_func( libui, "uiNewSlider", {C_INT,C_INT}, C_POINTER )
@@ -748,7 +807,9 @@ end procedure
 
 define_c_proc( libui, "uiComboboxOnSelected", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiComboboxOnSelected( atom c, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiComboboxOnSelected", {c,call_back({'+', id}),data} )
+	if id != -1 then
+		c_proc( "uiComboboxOnSelected", {c,call_back({'+', id}),data} )
+	end if
 end procedure
 
 define_c_func( libui, "uiNewCombobox", {}, C_POINTER )
@@ -789,7 +850,9 @@ end procedure
 
 define_c_proc( libui, "uiEditableComboboxOnChanged", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiEditableComboboxOnChanged( atom c, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiEditableComboboxOnChanged", {c,call_back({'+', id}),data} )
+	if id != -1 then
+		c_proc( "uiEditableComboboxOnChanged", {c,call_back({'+', id}),data} )
+	end if
 end procedure
 
 define_c_func( libui, "uiNewEditableCombobox", {}, C_POINTER )
@@ -816,7 +879,9 @@ end procedure
 
 define_c_proc( libui, "uiRadioButtonsOnSelected", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiRadioButtonsOnSelected( atom r, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiRadioButtonsOnSelected", {r,call_back({'+', id}),data} )
+	if id != -1 then
+		c_proc( "uiRadioButtonsOnSelected", {r,call_back({'+', id}),data} )
+	end if
 end procedure
 
 define_c_func( libui, "uiNewRadioButtons", {}, C_POINTER )
@@ -873,7 +938,9 @@ end procedure
 
 define_c_proc( libui, "uiMultilineEntryOnChanged", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiMultilineEntryOnChanged( atom e, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiMultilineEntryOnChanged", {e,call_back({'+', id}),data} )
+	if id != -1 then
+		c_proc( "uiMultilineEntryOnChanged", {e,call_back({'+', id}),data} )
+	end if
 end procedure
 
 define_c_func( libui, "uiMultilineEntryReadOnly", {C_POINTER}, C_INT )
@@ -910,7 +977,9 @@ end procedure
 
 define_c_proc( libui, "uiMenuItemOnClicked", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiMenuItemOnClicked( atom m, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiMenuItemOnClicked", {m,call_back({'+', id}),data} )
+	if id != -1 then
+		c_proc( "uiMenuItemOnClicked", {m,call_back({'+', id}),data} )
+	end if
 end procedure
 
 define_c_func( libui, "uiMenuItemChecked", {C_POINTER}, C_INT )
@@ -1717,15 +1786,15 @@ end procedure
 
 --// TODO
 
+/*
 define_c_func( libui, "uiDrawListFontFamilies", {}, C_POINTER )
 define_c_func( libui, "uiDrawFontFamiliesNumFamilies", {C_POINTER}, C_UINT )
 define_c_func( libui, "uiDrawFontFamiliesFamily", {C_POINTER,C_UINT}, C_POINTER )
 define_c_proc( libui, "uiDrawFreeFontFamilies", {C_POINTER} )
-
 public function uiDrawListFontFamilies()
 
 	atom ff = c_func( "uiDrawListFontFamilies", {} )
-	atom num = c_func( "uiDrawListFontFamilies", {ff} )
+	atom num = c_func( "uiDrawFontFamiliesNumFamilies", {ff} )
 
 	sequence values = repeat( "", num )
 	for n = 0 to num - 1 do
@@ -1741,9 +1810,9 @@ public function uiDrawListFontFamilies()
 
 	return values
 end function
+*/
 
 --// END TODO
-
 
 public enum type uiDrawTextWeight
 
@@ -1897,34 +1966,43 @@ public procedure uiDrawTextFontMetricsSetUnderlineThickness( atom fm, atom thick
 end procedure
 
 
-
+/*
 define_c_func( libui, "uiDrawLoadClosestFont", {C_POINTER}, C_POINTER )
 public function uiDrawLoadClosestFont( atom desc )
 	return c_func( "uiDrawLoadClosestFont", {desc} )
 end function
+*/
 
+/*
 define_c_proc( libui, "uiDrawFreeTextFont", {C_POINTER} )
 public procedure uiDrawFreeTextFont( atom font )
 	c_proc( "uiDrawFreeTextFont", {font} )
 end procedure
+*/
 
+/*
 define_c_func( libui, "uiDrawTextFontHandle", {C_POINTER}, C_POINTER )
 public function uiDrawTextFontHandle( atom font )
 	return c_func( "uiDrawTextFontHandle", {font} )
 end function
+*/
 
+/*
 define_c_proc( libui, "uiDrawTextFontDescribe", {C_POINTER,C_POINTER} )
 public procedure uiDrawTextFontDescribe( atom font, atom desc )
 	c_proc( "uiDrawTextFontDescribe", {font,desc} )
 end procedure
+*/
 
 -- TODO make copy with given attributes methods?
 -- TODO yuck this name
 
+/*
 define_c_proc( libui, "uiDrawTextFontGetMetrics", {C_POINTER,C_POINTER} )
 public procedure uiDrawTextFontGetMetrics( atom font, atom metrics )
 	c_proc( "uiDrawTextFontGetMetrics", {font,metrics} )
 end procedure
+*/
 
 -- TODO initial line spacing? and what about leading?
 
@@ -1940,10 +2018,12 @@ end procedure
 
 -- TODO get width
 
+/*
 define_c_proc( libui, "uiDrawTextLayoutSetWidth", {C_POINTER,C_DOUBLE} )
 public procedure uiDrawTextLayoutSetWidth( atom layout, atom width )
 	c_proc( "uiDrawTextLayoutSetWidth", {layout,width} )
 end procedure
+*/
 
 define_c_proc( libui, "uiDrawTextLayoutExtents", {C_POINTER,C_POINTER,C_POINTER} )
 public function uiDrawTextLayoutExtents( atom layout )
@@ -1961,10 +2041,12 @@ end function
 
 -- and the attributes that you can set on a text layout
 
+/*
 define_c_proc( libui, "uiDrawTextLayoutSetColor", {C_POINTER,C_INT,C_INT,C_DOUBLE,C_DOUBLE,C_DOUBLE,C_DOUBLE} )
 public procedure uiDrawTextLayoutSetColor( atom layout, atom startChar, atom endChar, atom r, atom g, atom b, atom a )
 	c_proc( "uiDrawTextLayoutSetColor", {layout,startChar,endChar,r,g,b,a} )
 end procedure
+*/
 
 define_c_proc( libui, "uiDrawText", {C_POINTER,C_DOUBLE,C_DOUBLE,C_POINTER} )
 public procedure uiDrawText( atom c, atom x, atom y, atom layout )
@@ -2038,7 +2120,9 @@ end function
 
 define_c_proc( libui, "uiFontButtonOnChanged", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiFontButtonOnChanged( atom b, object func, atom data = NULL, atom id = routine_id(data) )
-	c_proc( "uiFontButtonOnChanged", {b,call_back({'+', id}),data} )
+	if id != -1 then
+		c_proc( "uiFontButtonOnChanged", {b,call_back({'+', id}),data} )
+	end if
 end procedure
 
 define_c_func( libui, "uiNewFontButton", {}, C_POINTER )
@@ -2071,7 +2155,9 @@ end procedure
 
 define_c_proc( libui, "uiColorButtonOnChanged", {C_POINTER,C_POINTER,C_POINTER} )
 public procedure uiColorButtonOnChanged( atom bt, object func, atom data = NULL, atom id = routine_id(func) )
-	c_proc( "uiColorButtonOnChanged", {bt,call_back({'+', id}),data} )
+	if id != -1 then
+		c_proc( "uiColorButtonOnChanged", {bt,call_back({'+', id}),data} )
+	end if
 end procedure
 
 define_c_func( libui, "uiNewColorButton", {}, C_POINTER )
